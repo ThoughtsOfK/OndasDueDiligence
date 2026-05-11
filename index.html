@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONDAS INC. — Intelligence Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:       #0a1628;
+  --navy-mid:   #101e33;
+  --navy-light: #192c46;
+  --navy-card:  rgba(255,255,255,0.035);
+  --orange:     #c53c27;
+  --orange-dk:  #a0301f;
+  --orange-glow:rgba(197,60,39,0.18);
+  --white:      #ffffff;
+  --off-white:  #e8edf5;
+  --muted:      #6b8aaa;
+  --border:     rgba(255,255,255,0.07);
+  --gold:       #e8b84b;
+  --green:      #27ae60;
+  --yellow:     #f39c12;
+  --red-risk:   #e74c3c;
+  --blue-acc:   #3498db;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Barlow',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;overflow-x:hidden;}
+
+/* HEADER */
+.hdr{background:var(--navy-mid);border-bottom:2px solid var(--orange);padding:0 36px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;height:60px;}
+.logo-wrap{display:flex;align-items:center;gap:12px;}
+.logo-arrow{width:30px;height:30px;background:var(--orange);clip-path:polygon(0 0,60% 0,100% 50%,60% 100%,0 100%,40% 50%);flex-shrink:0;}
+.logo-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;letter-spacing:3px;text-transform:uppercase;}
+.logo-tagline{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--orange);text-transform:uppercase;font-weight:700;}
+.hdr-right{display:flex;align-items:center;gap:18px;}
+.ticker-pill{background:var(--orange);padding:3px 10px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;border-radius:2px;}
+.price-live{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--gold);}
+.price-sub{font-size:10px;color:var(--muted);letter-spacing:1px;text-align:right;}
+
+/* MAIN TABS */
+.maintabs{background:var(--navy-mid);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;padding:0 36px;scrollbar-width:none;}
+.maintabs::-webkit-scrollbar{display:none;}
+.mtab{font-family:'Barlow Condensed',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;padding:14px 18px;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.mtab:hover{color:var(--white);}
+.mtab.active{color:var(--white);border-bottom-color:var(--orange);}
+
+/* PANELS */
+.panel{display:none;padding:36px;max-width:1440px;margin:0 auto;}
+.panel.active{display:block;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION HEADERS */
+.sec-title{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;letter-spacing:3px;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.sec-title::before{content:'';display:block;width:4px;height:28px;background:var(--orange);flex-shrink:0;}
+.sec-sub{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:28px;padding-left:14px;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;}
+.gA{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;}
+
+/* CARDS */
+.card{background:var(--navy-card);border:1px solid var(--border);border-radius:3px;padding:20px;}
+.card-ot{border-top:3px solid var(--orange);}
+.card-lbl{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+.card-h{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--white);margin-bottom:6px;}
+p{line-height:1.7;color:rgba(255,255,255,.72);font-size:13.5px;margin-bottom:10px;}
+p:last-child{margin-bottom:0;}
+.hl{color:var(--gold);font-weight:600;}
+.ored{color:var(--orange);font-weight:600;}
+.grn{color:var(--green);font-weight:600;}
+b{color:var(--white);font-weight:600;}
+
+/* STAT BOXES */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px;}
+.stat{background:var(--navy-card);border:1px solid var(--border);border-top:3px solid var(--orange);padding:18px;border-radius:3px;}
+.slbl{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;}
+.sval{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:var(--white);line-height:1;}
+.schg{font-size:11px;margin-top:4px;font-weight:600;}
+.schg.up{color:var(--green);}
+.schg.neu{color:var(--gold);}
+.schg.dn{color:var(--red-risk);}
+
+/* ROWS */
+.row-item{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:2px;padding:11px 14px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.ri-main{font-size:13px;color:rgba(255,255,255,.82);font-weight:500;}
+.ri-sub{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.ri-val{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--gold);white-space:nowrap;}
+
+/* BADGE */
+.badge{font-family:'Barlow Condensed',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:1px;padding:3px 7px;text-transform:uppercase;border-radius:2px;white-space:nowrap;}
+.badge-o{background:var(--orange);color:#fff;}
+.badge-g{background:var(--gold);color:var(--navy);}
+.badge-gr{background:var(--green);color:#fff;}
+.badge-b{background:var(--blue-acc);color:#fff;}
+
+/* SUBSIDIARY CARDS */
+.sub-wrap{margin-bottom:28px;border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.sub-hdr{background:linear-gradient(135deg,var(--navy-light) 0%,rgba(197,60,39,.1) 100%);padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.sub-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+.sub-type{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+.sub-badges{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+
+/* SUBSIDIARY INNER TABS */
+.sub-tabs{display:flex;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border);}
+.stab{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;padding:10px 16px;cursor:pointer;transition:all .15s;}
+.stab:hover{color:var(--white);}
+.stab.active{color:var(--orange);border-bottom-color:var(--orange);}
+.sub-content{padding:20px 22px;}
+.sub-pane{display:none;}
+.sub-pane.active{display:block;}
+
+/* DEPLOY ITEM */
+.dep-item{background:rgba(255,255,255,.025);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:0 3px 3px 0;padding:13px 16px;margin-bottom:10px;}
+.dep-loc{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:8px;}
+.dep-flag{font-size:16px;}
+.dep-detail{font-size:12.5px;color:rgba(255,255,255,.65);margin-top:4px;line-height:1.5;}
+.dep-val{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--gold);margin-top:5px;}
+.dep-status{display:inline-block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:1px;font-weight:700;}
+.dep-status.active{background:rgba(39,174,96,.2);color:var(--green);}
+.dep-status.phase{background:rgba(232,184,75,.15);color:var(--gold);}
+.dep-status.dev{background:rgba(52,152,219,.15);color:var(--blue-acc);}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:22px;}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--orange) 0%,rgba(197,60,39,.08) 100%);}
+.tli{position:relative;padding:0 0 24px 22px;}
+.tli::before{content:'';position:absolute;left:-5px;top:5px;width:10px;height:10px;background:var(--orange);border-radius:50%;box-shadow:0 0 8px var(--orange);}
+.tl-date{font-family:'Barlow Condensed',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:2px;color:var(--orange);text-transform:uppercase;margin-bottom:3px;}
+.tl-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:3px;}
+.tl-body{font-size:12.5px;color:rgba(255,255,255,.58);line-height:1.5;}
+
+/* RISK ITEMS */
+.risk{background:var(--navy-card);border:1px solid var(--border);border-left:4px solid;padding:16px 18px;margin-bottom:14px;border-radius:0 3px 3px 0;}
+.risk.high{border-left-color:var(--red-risk);}
+.risk.med{border-left-color:var(--yellow);}
+.risk.ok{border-left-color:var(--green);}
+.risk-lbl{font-family:'Barlow Condensed',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.risk.high .risk-lbl{color:var(--red-risk);}
+.risk.med .risk-lbl{color:var(--yellow);}
+.risk.ok .risk-lbl{color:var(--green);}
+.risk-title{font-size:15px;font-weight:600;color:var(--white);margin-bottom:5px;}
+.risk-desc{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.55;}
+.turnaround{background:rgba(39,174,96,.06);border:1px solid rgba(39,174,96,.2);border-radius:3px;padding:12px 14px;margin-top:10px;}
+.turnaround-lbl{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:4px;}
+.prob-bar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;margin-top:6px;overflow:hidden;}
+.prob-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:3px;}
+
+/* GEO */
+.geo-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.geo-card{background:var(--navy-card);border:1px solid var(--border);border-radius:3px;padding:18px;}
+.geo-card.ben{border-top:3px solid var(--green);}
+.geo-card.rsk{border-top:3px solid var(--red-risk);}
+.geo-lbl{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+.geo-card.ben .geo-lbl{color:var(--green);}
+.geo-card.rsk .geo-lbl{color:var(--red-risk);}
+.geo-row{display:flex;gap:9px;margin-bottom:9px;align-items:flex-start;}
+.geo-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.geo-card.ben .geo-dot{background:var(--green);}
+.geo-card.rsk .geo-dot{background:var(--red-risk);}
+.geo-row p{margin:0;font-size:12.5px;}
+
+/* RATING BARS */
+.rbar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.rbar-lbl{font-size:12px;color:rgba(255,255,255,.7);width:200px;flex-shrink:0;}
+.rbar-track{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.rbar-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:3px;}
+.rbar-score{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--gold);width:28px;text-align:right;}
+
+/* REV CHART */
+.rev-chart{display:flex;align-items:flex-end;gap:10px;height:160px;padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.rc-wrap{display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end;}
+.rc-bar{width:100%;border-radius:3px 3px 0 0;position:relative;min-height:3px;}
+.rc-bar.act{background:linear-gradient(180deg,var(--orange) 0%,rgba(197,60,39,.35) 100%);}
+.rc-bar.proj{background:linear-gradient(180deg,var(--gold) 0%,rgba(232,184,75,.25) 100%);}
+.rc-val{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--white);white-space:nowrap;}
+.rc-yr{font-size:10.5px;color:var(--muted);margin-top:5px;letter-spacing:.5px;}
+
+/* PRICE SCENARIO CARDS */
+.scenario{background:var(--navy-card);border:1px solid var(--border);border-radius:3px;padding:18px;text-align:center;}
+.scenario.bear{border-top:3px solid var(--red-risk);}
+.scenario.base{border-top:3px solid var(--blue-acc);}
+.scenario.bull{border-top:3px solid var(--green);}
+.sc-lbl{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.scenario.bear .sc-lbl{color:var(--red-risk);}
+.scenario.base .sc-lbl{color:var(--blue-acc);}
+.scenario.bull .sc-lbl{color:var(--green);}
+.sc-price{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:800;line-height:1;}
+.scenario.bear .sc-price{color:var(--red-risk);}
+.scenario.base .sc-price{color:var(--blue-acc);}
+.scenario.bull .sc-price{color:var(--green);}
+.sc-upside{font-size:12px;color:var(--muted);margin-top:4px;margin-bottom:10px;}
+.sc-cond{font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;text-align:left;}
+
+/* DATA TABLE */
+.dtable{width:100%;border-collapse:collapse;}
+.dtable th{font-family:'Barlow Condensed',sans-serif;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);font-weight:700;}
+.dtable td{font-size:12.5px;padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:rgba(255,255,255,.78);vertical-align:top;}
+.dtable tr:hover td{background:rgba(255,255,255,.02);}
+.dtable .gold-cell{color:var(--gold);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:14px;}
+
+/* LEADER ROWS */
+.ldr{display:flex;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);align-items:flex-start;}
+.ldr:last-child{border-bottom:none;margin-bottom:0;}
+.ldr-av{width:38px;height:38px;background:linear-gradient(135deg,var(--orange),var(--navy-light));border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;}
+.ldr-name{font-size:14px;font-weight:600;color:var(--white);}
+.ldr-title{font-size:10.5px;color:var(--muted);}
+
+/* DIVIDER */
+hr.div{border:none;border-top:1px solid var(--border);margin:26px 0;}
+
+/* ANALYST TABLE */
+.analyst-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);gap:10px;}
+.analyst-row:last-child{border-bottom:none;}
+.an-firm{font-size:13px;font-weight:600;color:var(--white);}
+.an-analyst{font-size:10.5px;color:var(--muted);}
+.an-rating{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;padding:2px 7px;border-radius:2px;letter-spacing:1px;background:rgba(39,174,96,.2);color:var(--green);}
+.an-target{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;color:var(--gold);}
+
+@media(max-width:900px){
+  .g2,.g3,.g4,.stats,.geo-grid{grid-template-columns:1fr;}
+  .panel{padding:18px;}
+  .hdr{padding:0 16px;}
+  .maintabs{padding:0 8px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="hdr">
+  <div class="logo-wrap">
+    <div class="logo-arrow"></div>
+    <div>
+      <div class="logo-name">ONDAS INC.</div>
+      <div class="logo-tagline">Intelligence Dashboard · ONDS</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="ticker-pill">NASDAQ: ONDS</span>
+    <div>
+      <div class="price-live">$9.06 <span style="font-size:12px;color:var(--muted);">/ MCAP ~$4.4B</span></div>
+      <div class="price-sub">52W HIGH $15.28 &nbsp;·&nbsp; 52W LOW $0.69 &nbsp;·&nbsp; MAY 10, 2026</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ MAIN TABS ═══ -->
+<nav class="maintabs">
+  <button class="mtab active" onclick="showMain('overview',this)">Company Overview</button>
+  <button class="mtab" onclick="showMain('subsidiaries',this)">Subsidiary Directory</button>
+  <button class="mtab" onclick="showMain('ma',this)">M&amp;A Timeline</button>
+  <button class="mtab" onclick="showMain('guidance',this)">Guidance &amp; Outlook</button>
+  <button class="mtab" onclick="showMain('risks',this)">Risk Factors</button>
+  <button class="mtab" onclick="showMain('geopolitical',this)">Geopolitical</button>
+  <button class="mtab" onclick="showMain('competitive',this)">Competitive Landscape</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- PANEL: COMPANY OVERVIEW -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="p-overview" class="panel active">
+  <div class="sec-title">Company Overview</div>
+  <div class="sec-sub">Formerly Ondas Holdings Inc. · Renamed Ondas Inc. January 2026 · HQ: West Palm Beach, FL · Nasdaq: ONDS</div>
+
+  <div class="stats">
+    <div class="stat"><div class="slbl">2025 Full-Year Revenue</div><div class="sval">$50.7M</div><div class="schg up">▲ 605% YoY</div></div>
+    <div class="stat"><div class="slbl">2026 Revenue Guidance</div><div class="sval">$375M+</div><div class="schg neu">Raised from $110M</div></div>
+    <div class="stat"><div class="slbl">Pro Forma Cash (Jan 2026)</div><div class="sval">~$1.5B</div><div class="schg up">After $1.8B raised</div></div>
+    <div class="stat"><div class="slbl">Pro Forma Backlog (Mar 2026)</div><div class="sval">$457M</div><div class="schg up">Inc. Mistral + World View</div></div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Corporate Profile</div>
+      <p>Ondas Inc. (formerly Ondas Holdings Inc.) is a <b>system-of-systems provider</b> of autonomous aerial and ground robot intelligence and private wireless solutions. The company operates through three primary business units: <b>Ondas Autonomous Systems (OAS)</b>, <b>Ondas Networks</b>, and <b>Ondas Capital</b>.</p>
+      <p>Rebranded in January 2026 following a transformational wave of M&A, Ondas now fields a complete multi-domain defense and security architecture spanning stratospheric balloons → aerial ISR drones → counter-drone systems → tactical ground robots → demining platforms → heavy engineering vehicles → private wireless connectivity — integrated under a unified AI-driven command-and-control framework with Palantir as AI data partner.</p>
+      <p>The company is headquartered at 222 Lakeview Avenue, West Palm Beach, FL 33401. Total employees approximately <b>495+</b> across the enterprise. Stock has gained over <b>1,000%</b> in the trailing 12 months through early 2026 before retreating ~40% from the $15.28 52-week high.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Corporate Leadership</div>
+      <div class="ldr"><div class="ldr-av">EB</div><div><div class="ldr-name">Eric A. Brock — Founder, Chairman &amp; CEO</div><div class="ldr-title">Ondas Inc.</div><p style="font-size:12px;margin-top:3px;">20+ yrs banking &amp; investing. Founding partner, Clough Capital Partners (2000–2017). Bear Stearns alum. MBA Univ. of Chicago, BS Boston College. Compensation $219K (salary + bonus), owns 0.54% of shares.</p></div></div>
+      <div class="ldr"><div class="ldr-av">PH</div><div><div class="ldr-name">Brig. Gen. (Ret.) Patrick Huston — COO, GC &amp; Secretary</div><div class="ldr-title">Ondas Inc.</div><p style="font-size:12px;margin-top:3px;">35+ yrs national security. 101st Airborne Div., JSOC, USCENTCOM. West Point engineering degree. Law degree. FAA commercial pilot. U.S. Supreme Court attorney.</p></div></div>
+      <div class="ldr"><div class="ldr-av">NL</div><div><div class="ldr-name">Neil Laird — CFO</div><div class="ldr-title">Ondas Inc. (since June 2024)</div><p style="font-size:12px;margin-top:3px;">Financial services to Ondas since 2021. Leads finance and public reporting across the enterprise.</p></div></div>
+      <div class="ldr"><div class="ldr-av">MG</div><div><div class="ldr-name">Mark Green — Head of Global M&amp;A &amp; Corporate Development</div><div class="ldr-title">Ondas Inc.</div><p style="font-size:12px;margin-top:3px;">30+ yrs cross-border IB. Former MD Ladenburg Thalmann. Founded Green Capital Group. MBA Univ. of Bath. Architect of the M&A strategy.</p></div></div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="card-lbl">Business Units</div>
+      <div class="row-item"><div><div class="ri-main">Ondas Autonomous Systems (OAS)</div><div class="ri-sub">Primary growth engine · Defense &amp; Security</div></div></div>
+      <div class="row-item"><div><div class="ri-main">Ondas Networks</div><div class="ri-sub">FullMAX SDR · Rail &amp; Critical Infrastructure</div></div></div>
+      <div class="row-item"><div><div class="ri-main">Ondas Capital</div><div class="ri-sub">Advisory &amp; Strategic Investment · Ukraine Tech Bridge</div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Key End Markets</div>
+      <p style="font-size:12.5px;">Defense &amp; Homeland Security · Autonomous Border Protection · Counter-UAS · Demining &amp; EOD · ISR &amp; Persistent Surveillance · Stratospheric Sensing · Tactical Ground Robotics · Heavy Military Engineering · North American Railroad (Class I) · Oil &amp; Gas IoT · Public Safety · Smart City / Drone-as-First-Responder · Critical Infrastructure · European NATO Defense · Asia-Pacific National Security</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Strategic Thesis — System-of-Systems</div>
+      <p style="font-size:12.5px;">Ondas is assembling a <b>"system-of-systems"</b> architecture unifying the full kill chain from persistent high-altitude sensing (World View Stratollite) → aerial ISR &amp; swarm drones (Airobotics Optimus) → autonomous C-UAS intercept (Iron Drone Raider / Sentrycs CoRF) → tactical ground robots (Roboteam UGVs / Apeiro backpackable) → demining AI platforms (4M Defense) → prime U.S. contracting (Mistral IDIQ) → private wireless connectivity (Ondas Networks FullMAX) — all integrated under Palantir AI and Roboteam HUB command-and-control.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- PANEL: SUBSIDIARY DIRECTORY -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="p-subsidiaries" class="panel">
+  <div class="sec-title">Subsidiary Directory</div>
+  <div class="sec-sub">Each card includes tabbed sub-sections · Click tabs to navigate Overview / Deployments / Products / Leadership</div>
+
+  <!-- ─── AIROBOTICS ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">Airobotics</div><div class="sub-type">Aerial Autonomy · Drone-in-a-Box · ISR · Border Protection</div></div>
+      <div class="sub-badges"><span class="badge badge-o">OAS</span><span class="badge badge-g">Acq. 2023</span><span class="badge badge-b">Prime Contractor</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'air-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'air-dep')">Deployments</button>
+      <button class="stab" onclick="subTab(this,'air-prod')">Products</button>
+      <button class="stab" onclick="subTab(this,'air-lead')">Leadership</button>
+    </div>
+    <div class="sub-content">
+      <div id="air-over" class="sub-pane active">
+        <div class="g2">
+          <div><div class="card-lbl">Company</div><p>Founded in Tel Aviv, Israel, Airobotics is the developer of the Optimus System — the world's first commercially deployed fully-automated drone-in-a-box platform achieving FAA Airworthiness Type Certification. Acquired by Ondas in January 2023, Airobotics has been operational since 2016 at client sites and now serves as the aerial backbone of the OAS system-of-systems. Acts as prime contractor for the U.S. autonomous border protection program.</p></div>
+          <div><div class="card-lbl">Revenue Contribution</div><p>Airobotics is among the top OAS revenue contributors. It contributed meaningfully to OAS's $49.7M 2025 revenue and management cites it as a platform "seeing significant demand." Expected to remain a top revenue driver through 2026 and 2027 as the border protection program scales to thousands of drones. The border program alone represents a multi-year, multi-phase contract framework of undisclosed total ceiling value.</p><p>Contract renewals (e.g., major semiconductor manufacturer contract renewed Q4 2024) demonstrate strong retention economics and recurring RaaS revenue.</p></div>
+        </div>
+      </div>
+      <div id="air-dep" class="sub-pane">
+        <div class="card-lbl" style="margin-bottom:14px;">All Known Active &amp; Contracted Deployments</div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> U.S. Autonomous Border Protection Program</div><div class="dep-detail">OAS selected as prime contractor (Dec 2025). $20M initial purchase order received March 2026. Multi-phase program spanning 2 years targeting deployment of <b>thousands of autonomous drones</b> for persistent ISR, swarm-based response, and automated threat mitigation across complex border terrain. Integrates Airobotics Optimus, Iron Drone Raider, and Sentrycs CoRF.</div><div class="dep-val">$20M initial · Multi-phase framework · Undisclosed ceiling</div><div><span class="dep-status active">ACTIVE — Phase 1</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇮🇱</span> Israel — Semiconductor Manufacturer Aerial Security</div><div class="dep-detail">Operational since 2016 at one of the world's largest semiconductor manufacturers. Provides 24/7 automated drone security, safety monitoring, and construction project management over 30 square miles per airbase. Contract renewed Q4 2024. One of the earliest and longest-running Optimus deployments demonstrating long-term customer retention.</div><div class="dep-val">Recurring RaaS · Contract renewed 2024</div><div><span class="dep-status active">ACTIVE — Ongoing</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇮🇱</span> Israel — Urban Drone-as-First-Responder (DFR)</div><div class="dep-detail">Airobotics Optimus deployed as a first-responder aerial platform in Israeli municipalities. Responds to emergency calls autonomously, providing aerial video and situational awareness to ground units before first responders arrive on scene. Multiple city deployments active.</div><div class="dep-val">Multiple cities · Recurring service</div><div><span class="dep-status active">ACTIVE</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇦🇪</span> UAE — Smart City &amp; Industrial ISR</div><div class="dep-detail">Airobotics Optimus deployed in the UAE for smart city aerial surveillance, industrial facility monitoring, and port security. One of Airobotics' earliest international commercial markets. FAA Airworthiness Type Certification is recognized by UAE regulatory equivalency.</div><div class="dep-val">Multiple sites · Ongoing expansion</div><div><span class="dep-status active">ACTIVE</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🌏</span> Asia-Pacific — National Security (Classified Government)</div><div class="dep-detail">Airobotics secured a strategic defense contract with an APAC governmental defense customer announced at Singapore Airshow 2026 (Feb 3, 2026). Multi-phase contract supporting deployment of autonomous unmanned aerial capabilities for national security missions. Initial deliveries beginning 2026 with follow-on orders anticipated as deployments expand. Country undisclosed.</div><div class="dep-val">Multi-phase · 2026 initial deliveries</div><div><span class="dep-status phase">ACTIVE — Phase 1</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇪🇺</span> Europe — Major International Airports (Iron Drone Raider via Airobotics as integrator)</div><div class="dep-detail">Airobotics acts as prime systems integrator for Iron Drone Raider C-UAS deployments at two major European international airports. Two separate orders of $8.2M each (Nov &amp; Dec 2025), totaling $16.4M, from the same NATO-country governmental customer. Follow-on multi-million dollar civil infrastructure order secured Feb 2026.</div><div class="dep-val">$16.4M (airports) + follow-on</div><div><span class="dep-status active">ACTIVE</span></div></div>
+      </div>
+      <div id="air-prod" class="sub-pane">
+        <div class="g2">
+          <div>
+            <div class="card-lbl">Optimus System™</div>
+            <p>Fully automated drone-in-a-box platform. Autonomous docking station with automated battery swap and sensor changes. Covers up to 30 square miles per airbase. First UAS to achieve FAA Airworthiness Type Certification. BVLOS-capable without on-site operator. AI-powered flight management, real-time sensor fusion, and data analytics. Marketed on a RaaS (Robot-as-a-Service) subscription model.</p>
+            <div class="card-lbl" style="margin-top:14px;">Iron Drone Raider™</div>
+            <p>Autonomous counter-UAS interceptor drone. Kinetic interception of unauthorized/hostile drones. Operated by Airobotics as system integrator for customer deployments. Proven at European airports; selected for multi-country NATO customer.</p>
+          </div>
+          <div>
+            <div class="card-lbl">Products in Development</div>
+            <p>Next-generation Optimus with extended endurance and swarm coordination capability for border protection programs. Sensor fusion upgrades integrating Sentrycs CoRF, Insight Intelligent Sensors AI classification, and Roboteam HUB C2. Integration with World View Stratollite for stratosphere-to-ground continuous ISR hand-off. Swarm control software for thousands-of-drone programs.</p>
+          </div>
+        </div>
+      </div>
+      <div id="air-lead" class="sub-pane">
+        <p>Airobotics' founding engineering and operations leadership remained in place post-acquisition. The company operates from Tel Aviv, Israel. Oversight falls under <b>Oshri Lugassy</b> (Brig. Gen. Res.), Co-CEO of Ondas Autonomous Systems, who heads all OAS subsidiary operations globally, and <b>Guy Keenan</b>, CTO of OAS, who joined AT&T Bell Labs, spent 19 years at Catapult Communications (IPO 1999), and brings deep software and telecommunications engineering expertise. Eric Brock serves as Chairman of the Board of Airobotics.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SENTRYCS ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">Sentrycs</div><div class="sub-type">Counter-UAS · Cyber-over-RF · Protocol Manipulation · Urban C-UAS</div></div>
+      <div class="sub-badges"><span class="badge badge-o">OAS</span><span class="badge badge-g">Acq. 2025</span><span class="badge badge-b">FIFA World Cup</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'sen-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'sen-dep')">Deployments</button>
+      <button class="stab" onclick="subTab(this,'sen-prod')">Products</button>
+      <button class="stab" onclick="subTab(this,'sen-lead')">Leadership</button>
+    </div>
+    <div class="sub-content">
+      <div id="sen-over" class="sub-pane active"><div class="g2"><div><div class="card-lbl">Company</div><p>Founded 2017, acquired by Ondas in 2025. Headquartered in Israel with a U.S. office. Sentrycs is a global leader in counter-UAS technology using <b>Cyber-over-RF (CoRF)</b> and Protocol Manipulation — a passive detect/identify/track system with active non-kinetic drone takeover. Legally deployable in urban environments where RF jamming is restricted. TAM for handheld C-UAS alone estimated at $9.8B (Grand View Research, 5-year).</p></div><div><div class="card-lbl">Market Position</div><p>Sentrycs' key differentiation is its <b>non-jamming, legally compliant</b> architecture — critical for airports, cities, and mass events where spectrum jamming is illegal. The FIFA World Cup deployment across 16 cities in the U.S., Canada, and Mexico represents the most high-profile single C-UAS deployment in history, providing unparalleled global brand validation.</p></div></div></div>
+      <div id="sen-dep" class="sub-pane">
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸🇨🇦🇲🇽</span> 2026 FIFA World Cup — 16 Host Cities, North America</div><div class="dep-detail">Selected to deploy Cyber-over-RF C-UAS solutions across all 16 FIFA World Cup 2026 host venues in the United States, Canada, and Mexico. Contracts from federal, state, and local agencies. Protects stadiums, fan zones, and critical event infrastructure from unauthorized drone incursion during the world's most-watched sporting event.</div><div class="dep-val">Multi-million dollar · Federal + State + Local contracts</div><div><span class="dep-status active">ACTIVE — 2026</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇩🇪</span> Germany — State Police C-UAS (Feb 2026)</div><div class="dep-detail">Successfully delivered and deployed Sentrycs' CoRF system to a German State Police office (announced Feb 17, 2026 at Enforce Tac exhibition). Marks Sentrycs' entry into European law enforcement. Non-jamming approach is compliant with German and EU RF regulations. First of anticipated multi-agency European law enforcement deployments.</div><div class="dep-val">Undisclosed value · Repeat expected</div><div><span class="dep-status active">DEPLOYED</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇮🇱</span> Israel — Critical Infrastructure &amp; Border C-UAS</div><div class="dep-detail">Sentrycs' home market. CoRF systems deployed at Israeli critical infrastructure, government facilities, and border zones. Integrated with Airobotics Optimus and Iron Drone Raider as the cyber detection layer of the layered C-UAS stack for border protection programs.</div><div class="dep-val">Multiple sites · Ongoing</div><div><span class="dep-status active">ACTIVE</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🌍</span> Middle East — Counter-Drone (New Orders Mar 2026)</div><div class="dep-detail">Ondas received new counter-drone system orders from existing Middle East customers in March 2026 as regional drone threats escalated. Sentrycs and Iron Drone Raider systems involved. Undisclosed country.</div><div class="dep-val">Multi-$M new orders · Mar 2026</div><div><span class="dep-status active">ACTIVE</span></div></div>
+      </div>
+      <div id="sen-prod" class="sub-pane"><div class="g2"><div><div class="card-lbl">Sentrycs Fixed CoRF System</div><p>Stationary counter-drone installation for permanent site protection. Passively detects, tracks, and identifies drones via RF signal analysis. Active CoRF takeover neutralizes threats without kinetic engagement or RF jamming. Deployable at airports, prisons, government facilities, power plants, and borders.</p><div class="card-lbl" style="margin-top:14px;">Sentrycs Scout (New — Launched Feb 2026)</div><p>Man-carried, portable CoRF C-UAS system launched at Enforce Tac, Germany (Feb 2026). Ruggedized for field conditions. Provides tactical teams autonomous airspace control without fixed infrastructure. Targets law enforcement, convoy protection, VIP security, and border patrols. Estimated 5-year TAM for this segment: $9.8B.</p></div><div><div class="card-lbl">Pipeline</div><p>Multi-sensor fusion integration combining CoRF with optical/AI classification (Insight Intelligent Sensors) and kinetic intercept (Iron Drone Raider) into a fully automated layered C-UAS stack. Integration into Roboteam HUB C2 for unified ground-air threat management. Mobile vehicle-mounted CoRF system for military convoy protection. OEM licensing discussions with NATO-aligned defense primes.</p></div></div></div>
+      <div id="sen-lead" class="sub-pane"><p>Sentrycs operates from Israel with a U.S. presence. Founded 2017 by C-UAS technology specialists. Original leadership team retained post-acquisition. Operates under OAS Co-CEO <b>Oshri Lugassy</b>. David Chinn (McKinsey Senior Partner, appointed to OAS Board March 2026) provides strategic advisory for global defense market expansion including Sentrycs.</p></div>
+    </div>
+  </div>
+
+  <!-- ─── 4M DEFENSE ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">4M Defense</div><div class="sub-type">AI Ground Robotics · Demining · Land Intelligence Platform · EOD</div></div>
+      <div class="sub-badges"><span class="badge badge-o">OAS</span><span class="badge badge-g">Acq. 2025</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'fm-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'fm-dep')">Deployments</button>
+      <button class="stab" onclick="subTab(this,'fm-prod')">Products</button>
+      <button class="stab" onclick="subTab(this,'fm-lead')">Leadership</button>
+    </div>
+    <div class="sub-content">
+      <div id="fm-over" class="sub-pane active"><p>4M Defense's AI-enabled Land Intelligence Platform integrates autonomous ground robots, aerial drones, advanced sensing arrays, and AI data processing for large-scale landmine detection and route clearance. Directly plugged into two of the largest demining programs in the world — combined tender value of $80M as of April 2026 — both funded by the Israeli Ministry of Defense under the $1.7B Eastern Border Security Barrier Initiative and related programs. 4M also synergizes with Roboteam UGVs and INDO's heavy engineering platforms to create a full robotic demining + clearance ecosystem.</p></div>
+      <div id="fm-dep" class="sub-pane">
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇮🇱</span> Israel-Syria Border — Demining Program ($30M Tender)</div><div class="dep-detail">4M Defense awarded competitive tender valued at $30M+ to demine 740 acres along the Israel-Syria border. Initial order of $15.8M received March 10, 2026. Project milestones-based over up to 3 years with options for extension and scope expansion. Autonomous ground robots, aerial drones, and advanced sensing deployed for large-scale minefield clearance.</div><div class="dep-val">$15.8M initial · $30M+ total · 3-year execution</div><div><span class="dep-status active">ACTIVE — Phase 1</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇮🇱</span> Eastern Border Security Barrier Initiative ($50M Tender)</div><div class="dep-detail">Part of Israel MoD's $1.7B Eastern Border Security Barrier Initiative. 4M Defense won this competitive tender; $10M initial order received April 20, 2026. Second major 4M demining program in 2026. Additional phases and orders expected throughout 2026 and beyond as clearance operations progress along the full eastern border corridor.</div><div class="dep-val">$10M initial · $50M total · Multi-phase</div><div><span class="dep-status phase">ACTIVE — Phase 1</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🌍</span> Future Pipeline — Ukraine, Saudi, NATO Post-Conflict Zones</div><div class="dep-detail">NATO and EU post-conflict demining demand is surging, particularly in Ukraine (estimated 170,000+ sq km of contaminated land). Saudi-Yemen border zone, former ISIS territories in Syria/Iraq, and Balkan post-war zones all represent large future addressable markets. 4M is positioned as the AI-autonomous demining leader given its only two currently-executed programs at this scale.</div><div class="dep-val">Pipeline: multi-$B global TAM</div><div><span class="dep-status dev">PIPELINE</span></div></div>
+      </div>
+      <div id="fm-prod" class="sub-pane"><div class="g2"><div><div class="card-lbl">AI Land Intelligence Platform</div><p>Integrated system combining autonomous ground robots for mine detection and marking, aerial drone surveillance for mapping and safe zone identification, advanced multi-spectral and ground-penetrating sensing arrays, and AI data processing for real-time minefield mapping and route clearance prioritization. Scalable from small tactical operations to multi-hundred-acre national programs.</p></div><div><div class="card-lbl">Roadmap &amp; Integration</div><p>Integration with Roboteam tactical UGVs for protected personnel extraction from cleared zones. INDO Earth Moving heavy engineering vehicle integration for bulk earthmoving after robotic detection. Apeiro Motion lightweight robots as forward-deployed sensor scouts. Full system expected to reduce human deminer exposure by 90%+ while improving clearance speed 5–10x over manual methods.</p></div></div></div>
+      <div id="fm-lead" class="sub-pane"><p>4M Defense's founding engineering and operational leadership retained post-acquisition. Company operates within the OAS structure under <b>Oshri Lugassy</b>, Co-CEO OAS. Technical synergy managed alongside Roboteam, Apeiro Motion, and INDO Earth Moving under the OAS Ground Systems portfolio. David Chinn (McKinsey, OAS Board) provides strategic advisory for global program expansion.</p></div>
+    </div>
+  </div>
+
+  <!-- ─── ROBOTEAM ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">Roboteam Ltd.</div><div class="sub-type">Tactical UGVs · EOD · ISR Ground · 30+ Countries · Combat-Proven</div></div>
+      <div class="sub-badges"><span class="badge badge-o">OAS</span><span class="badge badge-g">Acq. Dec 2025</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'rt-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'rt-dep')">Deployments</button>
+      <button class="stab" onclick="subTab(this,'rt-prod')">Products</button>
+      <button class="stab" onclick="subTab(this,'rt-lead')">Leadership</button>
+    </div>
+    <div class="sub-content">
+      <div id="rt-over" class="sub-pane active"><p>Established 2009. Roboteam designs and manufactures tactical UGVs for EOD, ISR, route clearance, logistics, and urban combat operations. Systems deployed in 30+ countries, with hundreds of UGVs sold to Tier-1 defense and security customers including the U.S. Marine Corps and Israeli Ministry of Defense. Acquired by Ondas December 17, 2025. Roboteam closes the ground domain gap in OAS and provides the C2 architecture through Roboteam HUB that unifies all robotic assets across the Ondas platform.</p></div>
+      <div id="rt-dep" class="sub-pane">
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> U.S. Marine Corps — Tactical UGV Deployment</div><div class="dep-detail">Roboteam's UGV platforms are deployed with the U.S. Marine Corps for EOD, ISR, and combat support operations. Multiple platform types in use. U.S. Marine Corps relationship provides a bridgehead for expansion across all U.S. military branches via Mistral's IDIQ vehicles.</div><div class="dep-val">Ongoing program</div><div><span class="dep-status active">ACTIVE</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇮🇱</span> Israeli Ministry of Defense — UGV Programs</div><div class="dep-detail">Multiple Roboteam UGV platforms deployed by the IDF and Israeli security forces for EOD, ISR, border security, and urban combat support. Integrated with IDF's broader ground robotics modernization program. Synergy with 4M Defense demining robots and Airobotics aerial ISR for joint air-ground operations.</div><div class="dep-val">Ongoing multi-program</div><div><span class="dep-status active">ACTIVE</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🌍</span> 30+ Countries — Military &amp; Security Forces</div><div class="dep-detail">Roboteam has sold hundreds of UGVs across 30+ countries to military and homeland security organizations globally, including NATO allies, Middle East, and Indo-Pacific customers. Follow-on orders for $20M+ from a single major military customer were secured pre-acquisition and will be fulfilled through 2026.</div><div class="dep-val">$20M+ in orders pre-acq. · 30+ countries</div><div><span class="dep-status active">ACTIVE</span></div></div>
+      </div>
+      <div id="rt-prod" class="sub-pane"><div class="g2"><div><div class="card-lbl">UGV Family</div><p>Rugged, modular unmanned ground vehicles across multiple weight classes — from man-portable (PROBOT) to mid-size (TIGER) — for reconnaissance, EOD, route clearance, logistics support, and urban operations. All platforms feature modular payload mounting for sensors, cameras, robotic arms, and specialty tools. Hardened for contested electronic environments.</p><div class="card-lbl" style="margin-top:14px;">Roboteam HUB™</div><p>AI-enabled command-and-control platform that unifies diverse robotic assets — air, ground, and cyber — into a single operational picture. The connective tissue of the entire OAS system-of-systems architecture. Expected to become the enterprise C2 standard across all OAS subsidiaries.</p></div><div><div class="card-lbl">Roadmap</div><p>Roboteam HUB expansion to integrate Airobotics Optimus drones, Iron Drone Raider, World View Stratollite, and Sentrycs CoRF for unified cross-domain command. AI autonomy upgrades enabling zero-operator swarm ground operations. Integration with 4M Defense demining robots for joint clearance missions. Heavy EOD robot development leveraging INDO Earth Moving mechanical engineering.</p></div></div></div>
+      <div id="rt-lead" class="sub-pane"><p>Roboteam's founding engineering team and leadership organization retained post-acquisition, preserving customer relationships and product development continuity. The company operates from Israel with a U.S. presence. Operates within OAS under <b>Oshri Lugassy</b> as Co-CEO OAS. Roboteam was established in 2009 and has a 15-year track record of combat-proven technology development.</p></div>
+    </div>
+  </div>
+
+  <!-- ─── AMERICAN ROBOTICS ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">American Robotics</div><div class="sub-type">BVLOS Drones · FAA Pioneer · Industrial &amp; Public Safety · Rail ISR</div></div>
+      <div class="sub-badges"><span class="badge badge-o">OAS</span><span class="badge badge-g">Acq. Aug 2021</span><span class="badge badge-gr">FAA BVLOS #1</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'ar-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'ar-dep')">Deployments</button>
+      <button class="stab" onclick="subTab(this,'ar-prod')">Products</button>
+      <button class="stab" onclick="subTab(this,'ar-lead')">Leadership</button>
+    </div>
+    <div class="sub-content">
+      <div id="ar-over" class="sub-pane active"><p>American Robotics holds the most important regulatory achievement in commercial drone history: the <b>first FAA approval for fully automated BVLOS drone operations without an on-site human operator</b> — a regulatory moat no competitor has replicated at equivalent scale. The Scout System and Kestrel platform target industrial inspection (energy, agriculture, rail, mining) and public safety applications across North America. American Robotics also recently achieved <b>Blue UAS List status</b> for its Optimus drone, enabling broader U.S. government and military procurement pathways.</p></div>
+      <div id="ar-dep" class="sub-pane">
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> U.S. Public Safety — High-Visibility Events</div><div class="dep-detail">American Robotics Scout System deployed for public safety surveillance at major U.S. events. Provides aerial situational awareness for law enforcement, emergency management, and venue security. FAA BVLOS approval enables deployments without on-site drone operators, reducing personnel costs dramatically.</div><div class="dep-val">Ongoing public safety contracts</div><div><span class="dep-status active">ACTIVE</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> North American Industrial Inspection — BVLOS Programs</div><div class="dep-detail">Scout System deployed for pipeline inspection, power line inspection, cell tower inspection, agricultural precision monitoring, and mining site surveillance. FAA BVLOS waiver is the enabling regulatory differentiator across all these markets. Customers span energy utilities, agricultural cooperatives, and telecommunications infrastructure operators.</div><div class="dep-val">Multiple commercial programs</div><div><span class="dep-status active">ACTIVE</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> North American Rail — ISR &amp; Infrastructure Inspection</div><div class="dep-detail">American Robotics' rail ISR programs support Ondas Networks' FullMAX railroad connectivity platform. Drone inspection of track, signaling equipment, and right-of-way infrastructure provides complementary aerial data to FullMAX's ground-level MC-IoT. Three Class I railroads in active PoC engagement with Ondas Networks; American Robotics provides aerial component.</div><div class="dep-val">Multiple railroad POCs</div><div><span class="dep-status phase">POC / EXPANSION</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> Blue UAS List — U.S. Government &amp; DoD Pathway</div><div class="dep-detail">American Robotics' Optimus drone achieved Blue UAS List status, certifying compliance with DoD cybersecurity, supply-chain, and operational standards. This certification opens direct procurement pathways across DoD, DHS, and federal law enforcement — the single largest addressable drone market in the world.</div><div class="dep-val">Blue UAS certified · DoD procurement eligible</div><div><span class="dep-status active">CERTIFIED</span></div></div>
+      </div>
+      <div id="ar-prod" class="sub-pane"><div class="g2"><div><div class="card-lbl">Scout System™ &amp; Kestrel Platform</div><p>Scout: weatherproof, automated drone station with interchangeable payload modules. Designed for permanent fixed-site installation at industrial facilities. FAA-waived for fully automated BVLOS without on-site operators. Kestrel: AI-powered data analytics platform processing Scout aerial imagery into actionable industrial intelligence — anomaly detection, change mapping, vegetation encroachment analysis.</p></div><div><div class="card-lbl">Raider™ (Counter-UAS)</div><p>Autonomous drone interceptor developed under the American Robotics / OAS umbrella. Functions as a kinetic C-UAS layer complementary to Sentrycs' CoRF electronic system, providing physical interception of hostile drones. Currently deployed via Airobotics as system integrator for European airport C-UAS programs.</p></div></div></div>
+      <div id="ar-lead" class="sub-pane"><p>Eric Brock serves as Chairman of American Robotics. Operating leadership within OAS structure under <b>Oshri Lugassy</b>, Co-CEO OAS. American Robotics is headquartered in Marlborough, Massachusetts — strategically positioned in the U.S. drone ecosystem near major DoD and DHS procurement centers.</p></div>
+    </div>
+  </div>
+
+  <!-- ─── MISTRAL ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">Mistral</div><div class="sub-type">U.S. Defense Prime Contractor · Army + SOCOM IDIQ · Domestic Manufacturing</div></div>
+      <div class="sub-badges"><span class="badge badge-o">OAS</span><span class="badge badge-g">Merged Apr 24, 2026 · $175M</span><span class="badge badge-b">DoD Prime</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'mis-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'mis-dep')">Contracts &amp; Backlog</button>
+      <button class="stab" onclick="subTab(this,'mis-prod')">Capabilities</button>
+      <button class="stab" onclick="subTab(this,'mis-lead')">Strategic Value</button>
+    </div>
+    <div class="sub-content">
+      <div id="mis-over" class="sub-pane active"><p>Mistral is a U.S. defense prime contractor providing Ondas with direct access to <b>U.S. Army and Special Operations Command (SOCOM) Indefinite Delivery / Indefinite Quantity (IDIQ) contract vehicles</b> — the procurement gateway that enables sole-source task order awards without re-competing for each program. Merger completed April 24, 2026, valued at $175M. Mistral captured programs exceeding $1B in total value during its history. Adds domestic U.S. manufacturing, integration capabilities, and program management infrastructure essential for large DoD program execution.</p></div>
+      <div id="mis-dep" class="sub-pane">
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> U.S. Army IDIQ Contract Vehicles</div><div class="dep-detail">Mistral holds active IDIQ contract vehicles with the U.S. Army that enable direct task order awards across a broad range of defense programs. These vehicles allow Ondas to deploy OAS technologies (Roboteam UGVs, Airobotics Optimus, Sentrycs CoRF) into U.S. Army programs without the 2–5 year re-qualification cycle. Programs in excess of $1B captured historically.</div><div class="dep-val">$264M backlog at close · $1B+ programs</div><div><span class="dep-status active">ACTIVE PRIME</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> SOCOM Special Operations IDIQ Vehicles</div><div class="dep-detail">Mistral also holds Special Operations Command IDIQ vehicles — the most coveted defense contracting gateway for advanced technology companies. SOCOM programs typically have less bureaucracy, faster procurement cycles, and higher per-unit pricing than conventional DoD programs. Critical for deploying Roboteam UGVs, Sentrycs C-UAS, and OAS aerial systems in SOF operations.</div><div class="dep-val">SOCOM access · High-value programs</div><div><span class="dep-status active">ACTIVE PRIME</span></div></div>
+      </div>
+      <div id="mis-prod" class="sub-pane"><p>Mistral provides Ondas with: (1) <b>Prime contractor status</b> for U.S. DoD programs, (2) <b>IDIQ task order vehicles</b> for Army and SOCOM, (3) <b>Domestic manufacturing and integration facilities</b> for U.S.-made content requirements (ITAR / Buy American), (4) <b>Program management and execution infrastructure</b> for large multi-year DoD contracts, and (5) <b>Security clearance infrastructure</b> for classified program participation. Combined with ONBERG's European manufacturing hub, Ondas now has domestic manufacturing on both sides of the Atlantic.</p></div>
+      <div id="mis-lead" class="sub-pane"><p>Mistral's leadership team and program execution infrastructure remain in place post-merger. The strategic value of Mistral is as a <b>contracting gateway, not a standalone product company</b> — it is the delivery vehicle for the entire OAS technology portfolio into the U.S. DoD. The Mistral merger is, in management's own framing, the most strategically important transaction in Ondas history. Pro forma backlog (Mar 31, 2026) of $457M includes $264M attributed to Mistral. CEO Eric Brock, COO Patrick Huston (retired Brigadier General), and Head of M&amp;A Mark Green led the transaction.</p></div>
+    </div>
+  </div>
+
+  <!-- ─── WORLD VIEW ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">World View Enterprises</div><div class="sub-type">Stratospheric Balloons · Persistent ISR · High-Altitude Sensing · Palantir AI Partner</div></div>
+      <div class="sub-badges"><span class="badge badge-o">OAS</span><span class="badge badge-g">Acq. Apr 1, 2026</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'wv-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'wv-dep')">Deployments</button>
+      <button class="stab" onclick="subTab(this,'wv-prod')">Products</button>
+      <button class="stab" onclick="subTab(this,'wv-lead')">Strategic Significance</button>
+    </div>
+    <div class="sub-content">
+      <div id="wv-over" class="sub-pane active"><p>World View Enterprises develops the <b>Stratollite™</b> — a long-endurance stratospheric balloon platform operating at 60,000–100,000 feet for days to weeks, providing persistent AI-enabled ISR and multi-domain sensing. Unlike satellites (expensive, fixed orbits) or aircraft (fuel costs, crew), Stratollites are affordable, repositionable within hours, and can loiter over a target area indefinitely. Acquired April 1, 2026. $16M backlog at close. Partnership with Palantir Technologies to build an AI-driven multi-domain ISR platform that connects World View sensing with OAS aerial, ground, and C2 systems.</p></div>
+      <div id="wv-dep" class="sub-pane">
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> U.S. Department of Defense — Multi-Domain ISR Programs</div><div class="dep-detail">World View's Stratollite platforms have been under evaluation and deployment for DoD persistent ISR requirements. Provides wide-area persistent coverage supporting theater-level surveillance, border monitoring, and counter-threat detection at altitudes unreachable by conventional UAVs but without the cost and lead time of satellite assets.</div><div class="dep-val">$16M backlog · Active pursuit</div><div><span class="dep-status active">ACTIVE</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🌐</span> Palantir AI Multi-Domain ISR Partnership</div><div class="dep-detail">Ondas is co-developing with Palantir Technologies an AI-driven multi-domain ISR platform connecting World View Stratollite sensing, Airobotics aerial drones, Roboteam ground systems, and centralized AI decision-making. This platform represents the intelligence backbone of the entire OAS system-of-systems and is expected to become a critical program of record for the DoD.</div><div class="dep-val">Strategic partnership · Platform development</div><div><span class="dep-status dev">DEVELOPMENT</span></div></div>
+      </div>
+      <div id="wv-prod" class="sub-pane"><div class="g2"><div><div class="card-lbl">Stratollite™</div><p>Long-endurance stratospheric balloon operating at 60,000–100,000 ft. Days to weeks of continuous loiter time. AI-enabled payload bay with swappable sensors (EO/IR, SAR, SIGINT, COMINT, atmospheric sensors). Wide-area persistent coverage — a single Stratollite can monitor an area the size of a U.S. state continuously. Rapidly repositionable to emerging hotspots within hours.</p></div><div><div class="card-lbl">Next-Gen Pipeline</div><p>Extended endurance Stratollite (30+ day loiter). AI-driven autonomous repositioning. Multi-sensor fusion with Ondas aerial drone data for seamless ISR hand-off from 100,000 ft to treetop level. Integration into Palantir Gotham AI decision engine. Commercial applications: climate monitoring, disaster response, precision agriculture sensing at national scale.</p></div></div></div>
+      <div id="wv-lead" class="sub-pane"><p>World View adds the <b>stratospheric layer</b> completing Ondas' vertical ISR coverage: Ground UGVs (0 ft) → Low-altitude tactical drones (500–5,000 ft) → Medium-altitude ISR (5,000–50,000 ft) → Stratospheric persistent (60,000–100,000 ft). Combined with Palantir AI, this "stack" is more comprehensive than any single defense prime currently offers in the autonomous ISR domain. Management highlighted World View during the Q4 2025 earnings call as central to the OAS Investor Day 2026 roadmap for a multi-domain ISR platform. The Palantir partnership elevates Ondas from a hardware provider to an AI-enabled intelligence services company.</p></div>
+    </div>
+  </div>
+
+  <!-- ─── ONDAS NETWORKS ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">Ondas Networks Inc.</div><div class="sub-type">FullMAX SDR · IEEE 802.16t · Mission-Critical IoT · North American Rail Standard</div></div>
+      <div class="sub-badges"><span class="badge badge-o">Networks BU</span><span class="badge badge-g">Founding Subsidiary</span><span class="badge badge-gr">AAR Standard</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'on-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'on-dep')">Deployments</button>
+      <button class="stab" onclick="subTab(this,'on-prod')">Products</button>
+      <button class="stab" onclick="subTab(this,'on-lead')">Leadership</button>
+    </div>
+    <div class="sub-content">
+      <div id="on-over" class="sub-pane active"><p>Ondas Networks develops the <b>FullMAX™ IEEE 802.16t (dot16) Software-Defined Radio platform</b> — a standards-based, multi-patented private licensed wireless broadband system enabling Mission-Critical IoT across railroad, utilities, oil &amp; gas, transportation, and government markets. The Association of American Railroads (AAR) selected dot16 as the foundation for Next-Generation Head-of-Train/End-of-Train (NGHE) communications and as the upgrade path across all three AAR-designated frequency bands (900 MHz, 450 MHz, 160 MHz). Revenue has been modest ($1M in 2025) as railroad buildouts await firm commitments, but the structural tailwind from AAR standard adoption positions this as a large, long-cycle revenue stream beginning 2027+.</p></div>
+      <div id="on-dep" class="sub-pane">
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> Multiple Class I Railroads — PoC Deployments (Q4 2025 – Q1 2026)</div><div class="dep-detail">Three separate Proof-of-Concept deployments on three different Class I railroad properties. Testing FullMAX dot16 over 160 MHz network for telecommunications, signaling, and general operational applications. First installation completed January 2026 providing end-to-end communications with third-party wayside equipment. Results expected to drive full productization and commercialization in 2026, with full buildouts in 2027.</div><div class="dep-val">3 Class I railroads · PoC Q4 2025–Q1 2026</div><div><span class="dep-status phase">POC DEPLOYMENT</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> Chicago Area — A Block 900 MHz Network Buildout</div><div class="dep-detail">One Class I railroad previously deployed 900 MHz equipment on a Chicago-area subdivision to meet the FCC deadline for the A Block move. Has now transitioned its complete installation of base stations and wayside devices to Ondas Networks' IEE-compliant dot16 equipment — the first full commercial network buildout transition.</div><div class="dep-val">Full network transition · First commercial buildout</div><div><span class="dep-status active">ACTIVE</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇮🇳</span> India — Railway Market Commercial Deliveries</div><div class="dep-detail">Ondas Networks configured production of radio boards for the Indian railway market, with first commercial deliveries beginning early 2026. India's rail network is one of the world's largest (68,000+ route km), representing a massive long-term market for FullMAX deployment.</div><div class="dep-val">First deliveries early 2026</div><div><span class="dep-status active">INITIAL DELIVERIES</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇸</span> Utilities &amp; Oil/Gas — Private Wireless MC-IoT</div><div class="dep-detail">FullMAX deployed in private licensed wireless networks for electric utilities and oil &amp; gas operators requiring mission-critical IoT connectivity for SCADA, sensor networks, and operational communications. These markets operate on similar licensed spectrum to railroads and benefit from the same dot16 technology stack.</div><div class="dep-val">Multiple commercial customers</div><div><span class="dep-status active">ACTIVE</span></div></div>
+      </div>
+      <div id="on-prod" class="sub-pane"><div class="g2"><div><div class="card-lbl">FullMAX SDR Platform</div><p>Software-Defined Radio platform based on IEEE 802.16t standard. Operates across 900 MHz, 450 MHz, and 160 MHz AAR-designated bands. Multi-patented. Software-defined architecture allows feature updates without hardware replacement — reducing customer capex. Enables true Mission-Critical IoT: high reliability, low latency, secure, private, wide-area broadband.</p></div><div><div class="card-lbl">Pipeline</div><p>NGHE (Next-Gen Head-of-Train / End-of-Train) Generation 4 specification integration expected by end 2026; product rollouts 2027. Direct Peer-to-Peer dot16 protocol for 160 MHz network expansion. India rail market scale-up. Utility smart grid applications. Drone aviation corridor private wireless for FAA UTM (Unmanned Traffic Management).</p></div></div></div>
+      <div id="on-lead" class="sub-pane"><div class="ldr"><div class="ldr-av">MN</div><div><div class="ldr-name">Markus Nottelmann — CEO, Ondas Networks</div><div class="ldr-title">Extensive railroad technology leadership</div><p style="font-size:12px;margin-top:3px;">Former leadership roles at Sperry Rail Service and Acuren Inspections (Rockwood Holdings subsidiaries) and Furmanite Inc. Deep experience introducing new technologies into railroad markets — exactly the long-cycle relationship management that FullMAX adoption requires.</p></div></div></div>
+    </div>
+  </div>
+
+  <!-- ─── INDO EARTH MOVING ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">INDO Earth Moving Ltd.</div><div class="sub-type">Heavy Military Engineering Vehicles · Robotic Integration · Sustainment</div></div>
+      <div class="sub-badges"><span class="badge badge-o">OAS</span><span class="badge badge-g">Acq. Mar 17, 2026</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'in-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'in-dep')">Deployments</button>
+      <button class="stab" onclick="subTab(this,'in-lead')">Integration Roadmap</button>
+    </div>
+    <div class="sub-content">
+      <div id="in-over" class="sub-pane active"><p>INDO Earth Moving specializes in procurement, integration, and lifecycle support of <b>heavy tracked engineering vehicles</b> for military and national infrastructure programs. Acquired by Ondas March 17, 2026, immediately after winning a <b>$140M Heavy Engineering Platforms tender</b> — one of the largest single contract anchors in OAS history. Ondas plans to roboticize INDO's engineering vehicle fleet using 4M Defense, Roboteam, and Apeiro Motion ground systems, creating the world's first fully-autonomous heavy military engineering platform.</p></div>
+      <div id="in-dep" class="sub-pane">
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇮🇱</span> $140M Military Heavy Engineering Platforms Program</div><div class="dep-detail">INDO Earth Moving won the $140M Heavy Engineering Platforms tender prior to acquisition. $68M initial order received. Delivery of dozens of heavy tracked engineering vehicles over two years. Q2 2026 revenue start for initial deliveries. Sustainment infrastructure for at least 4 years following delivery — a recurring revenue stream potentially extending total program value to $200M+ over 6 years.</div><div class="dep-val">$68M initial · $140M total · 4+ yr sustainment</div><div><span class="dep-status active">ACTIVE — Deliveries Q2 2026</span></div></div>
+      </div>
+      <div id="in-lead" class="sub-pane"><p>INDO's engineering vehicle platform will be progressively autonomized through synergies with: <b>4M Defense</b> (mine-detection for route clearance ahead of engineering operations), <b>Roboteam</b> (tactical UGV escort and security), <b>Apeiro Motion</b> (forward-deployed sensor scouts), and <b>Airobotics</b> (aerial ISR overwatch). Target: a fully autonomous military engineering platoon requiring zero human operators in high-threat environments. This concept represents the next frontier in military engineering and is aligned with DoD's GCV (Ground Combat Vehicle) autonomy roadmap. Follow-on orders and fleet expansion expected.</p></div>
+    </div>
+  </div>
+
+  <!-- ─── ONDAS CAPITAL ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">Ondas Capital Inc.</div><div class="sub-type">Advisory · Strategic Investment · Ukraine-to-West Technology Bridge</div></div>
+      <div class="sub-badges"><span class="badge badge-o">Capital BU</span><span class="badge badge-g">Launched 2025</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'oc-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'oc-dep')">Portfolio</button>
+    </div>
+    <div class="sub-content">
+      <div id="oc-over" class="sub-pane active"><p>Ondas Capital was launched in 2025 with a mandate to deploy <b>$150M+ in capital</b> advancing the "Technology Bridge" strategy — connecting combat-proven, dual-use unmanned and autonomous technologies from Ukraine to U.S. and European markets. Acts as Ondas' internal M&A identification, evaluation, and integration engine. The platform was described by management as an "advisory service and strategic investment management service" with a mission to fund and scale the OAS global growth plan.</p></div>
+      <div id="oc-dep" class="sub-pane">
+        <div class="row-item"><div><div class="ri-main">PDW Holdings — $35M Strategic Investment</div><div class="ri-sub">Leading defense technology company · Ecosystem relationships</div></div><div class="ri-val">$35M</div></div>
+        <div class="row-item"><div><div class="ri-main">World View Enterprises — Investment → Full Acquisition</div><div class="ri-sub">$10M initial investment (Mar 2026) then acquired Apr 1, 2026</div></div><div class="ri-val">Acquired</div></div>
+        <div class="row-item"><div><div class="ri-main">Rift Dynamics — Strategic Investment</div><div class="ri-sub">Autonomous systems / defense tech · Ukraine ecosystem</div></div></div>
+        <div class="row-item"><div><div class="ri-main">Firestorm Labs — Strategic Investment</div><div class="ri-sub">One-way effectors / loitering munitions technology</div></div></div>
+        <div class="row-item"><div><div class="ri-main">Lightpath — Public Market Investment</div><div class="ri-sub">Optical communications / defense sensors</div></div></div>
+        <div class="row-item"><div><div class="ri-main">SafePro AI — Public Market Investment</div><div class="ri-sub">AI safety and threat detection systems</div></div></div>
+        <div class="row-item"><div><div class="ri-main">Kopin Industries — Public Market Investment</div><div class="ri-sub">Wearable display technology for defense applications</div></div></div>
+        <div class="row-item"><div><div class="ri-main">Unusual Machines (UMAC) — Public Market Investment</div><div class="ri-sub">U.S.-made drone components · Blue UAS ecosystem</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ONBERG JV ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">ONBERG Autonomous Systems</div><div class="sub-type">Joint Venture · Heidelberger AG · European Drone Defense Manufacturing Hub</div></div>
+      <div class="sub-badges"><span class="badge badge-o">JV</span><span class="badge badge-g">Launched Apr 15, 2026</span><span class="badge badge-b">Germany / NATO</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'ob-over')">Overview</button>
+      <button class="stab" onclick="subTab(this,'ob-dep')">Operations</button>
+    </div>
+    <div class="sub-content">
+      <div id="ob-over" class="sub-pane active"><p>ONBERG Autonomous Systems is a joint venture between Ondas Inc. and <b>Heidelberger Druckmaschinen AG (Heidelberg)</b>, headquartered in <b>Brandenburg an der Havel, Germany</b>. Launched April 15, 2026 with a live operational demonstration at launch. The JV combines Ondas Autonomous Systems' counter-UAS and ISR technologies with Heidelberg's industrial scale, German manufacturing expertise, and European procurement relationships. Initial focus: Germany and Ukraine, with expansion across NATO-aligned Europe planned.</p></div>
+      <div id="ob-dep" class="sub-pane">
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇩🇪</span> Germany — European Manufacturing &amp; C-UAS Production Hub</div><div class="dep-detail">Brandenburg an der Havel factory begins production, development, and deployment of integrated autonomous drone defense systems. European manufacturing addresses EU sovereign defense content requirements (many European governments require domestically-produced defense equipment). Provides NATO-compliant supply chain for Sentrycs CoRF, Iron Drone Raider, and Airobotics Optimus systems.</div><div class="dep-val">Production launched Apr 2026</div><div><span class="dep-status active">OPERATIONAL</span></div></div>
+        <div class="dep-item"><div class="dep-loc"><span class="dep-flag">🇺🇦</span> Ukraine — Combat Theater Deployment Pipeline</div><div class="dep-detail">ONBERG is positioned to supply drone defense systems directly to Ukraine — one of the world's highest-consumption markets for autonomous defense technology. Ukrainian battlefield experience with OAS platforms also generates real-world combat performance data that feeds back into product development — a "live-fire R&amp;D" feedback loop unavailable to competitors without combat zone presence.</div><div class="dep-val">Pipeline — Active pursuit</div><div><span class="dep-status dev">PIPELINE</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── APEIRO MOTION / ROTRON ─── -->
+  <div class="sub-wrap">
+    <div class="sub-hdr">
+      <div><div class="sub-name">Apeiro Motion &nbsp;·&nbsp; Rotron Aerospace</div><div class="sub-type">Lightweight UGVs &amp; Tethered UAVs · Propulsion Systems · Ground Robotics Motion</div></div>
+      <div class="sub-badges"><span class="badge badge-o">OAS</span><span class="badge badge-g">Apeiro: 2025 · Rotron: Q1 2026</span></div>
+    </div>
+    <div class="sub-tabs">
+      <button class="stab active" onclick="subTab(this,'ap-over')">Overview &amp; Products</button>
+      <button class="stab" onclick="subTab(this,'ap-dep')">Role in System-of-Systems</button>
+    </div>
+    <div class="sub-content">
+      <div id="ap-over" class="sub-pane active"><div class="g2"><div><div class="card-lbl">Apeiro Motion</div><p>Designs backpackable, lightweight unmanned ground vehicles and advanced robotic motion systems for frontline military and special operations. Fills the "last-100-meter" dismounted soldier capability gap. Also develops tethered UAV systems providing persistent, elevated ISR at the squad level. Proprietary navigation and communications technologies enable operations in GPS-denied environments.</p></div><div><div class="card-lbl">Rotron Aerospace (Acq. Q1 2026 · $6.7M cash + shares)</div><p>UK-based manufacturer of high-performance rotary engines and propulsion systems for UAVs, unmanned vehicles, and autonomous platforms. Acquired to extend OAS vertical integration into propulsion manufacturing — reducing supply chain dependency on third-party engine suppliers for Airobotics, Iron Drone, and future OAS platforms. Also expands Ondas' UK / NATO European presence.</p></div></div></div>
+      <div id="ap-dep" class="sub-pane"><p>In the OAS system-of-systems: Apeiro lightweight UGVs serve as <b>forward-deployed sensor nodes</b> operated by dismounted soldiers or autonomously, feeding real-time ground-level data to the Roboteam HUB C2. Tethered UAVs provide persistent low-altitude aerial ISR at squad level — complementing Airobotics' higher-altitude coverage. Apeiro motion systems are also integrated into INDO Earth Moving's roboticization roadmap, providing locomotion and actuation technology for the next generation of autonomous engineering vehicles. Rotron propulsion systems will be integrated into future OAS fixed-wing and VTOL platforms, reducing per-unit COGS and improving reliability.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- PANEL: M&A TIMELINE -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="p-ma" class="panel">
+  <div class="sec-title">M&amp;A Timeline</div>
+  <div class="sec-sub">Completed transactions, active integrations, and identified future expansion markets</div>
+  <div class="g2" style="gap:30px;">
+    <div>
+      <div class="card-lbl" style="margin-bottom:18px;">Completed Transactions (Chronological)</div>
+      <div class="timeline">
+        <div class="tli"><div class="tl-date">August 2021</div><div class="tl-title">American Robotics, Inc.</div><div class="tl-body">First autonomous drone acquisition. FAA-pioneering BVLOS waiver, Scout System, and Kestrel analytics platform. Ondas' entry into commercial drone-as-a-service market.</div></div>
+        <div class="tli"><div class="tl-date">January 2023</div><div class="tl-title">Airobotics Ltd. (Israel) — ~$32M</div><div class="tl-body">Drone-in-a-Box Optimus System. Established Israel operations. FAA Airworthiness Type Certification. Foundational aerial platform for OAS. Deployments in Israel, UAE since 2016.</div></div>
+        <div class="tli"><div class="tl-date">2024 (via OAS)</div><div class="tl-title">Iron Drone / Ardenna</div><div class="tl-body">Iron Drone Raider — autonomous counter-drone interceptor. Ardenna — AI imaging and analytics. Together form the kinetic C-UAS and AI vision layers of OAS.</div></div>
+        <div class="tli"><div class="tl-date">Early 2025</div><div class="tl-title">Sentrycs Ltd. (Israel)</div><div class="tl-body">Cyber-over-RF non-kinetic C-UAS. Regulatory-compliant urban drone interdiction. Selected for 2026 FIFA World Cup (16 cities). German State Police contract Feb 2026.</div></div>
+        <div class="tli"><div class="tl-date">2025</div><div class="tl-title">Apeiro Motion</div><div class="tl-body">Lightweight UGVs and tethered UAVs for frontline operations. Advanced robotic motion systems feeding into INDO roboticization roadmap.</div></div>
+        <div class="tli"><div class="tl-date">2025</div><div class="tl-title">4M Defense (Israel)</div><div class="tl-body">AI land intelligence platform for demining. Immediately deployed under $80M combined Israel MoD tender value. Largest demining robotics programs ever executed.</div></div>
+        <div class="tli"><div class="tl-date">2025</div><div class="tl-title">Zickel (Precision Optics / ISR Sensors)</div><div class="tl-body">ISR sensor and precision optics capabilities. Integrated into Airobotics Optimus payload bay and 4M Defense sensing arrays.</div></div>
+        <div class="tli"><div class="tl-date">December 17, 2025</div><div class="tl-title">Roboteam Ltd. (Israel)</div><div class="tl-body">Tactical UGVs in 30+ countries. Roboteam HUB C2 platform. U.S. Marine Corps + IDF deployments. $20M+ existing orders. Expected $30M+ 2026 revenue.</div></div>
+        <div class="tli"><div class="tl-date">Q1 2026 — BIRD</div><div class="tl-title">BIRD (Defense Systems)</div><div class="tl-body">Only Q1 2026 acquisition to contribute meaningfully to Q1 revenue per management. Drone / defense focus; full details undisclosed.</div></div>
+        <div class="tli"><div class="tl-date">Q1 2026 — Rotron Aero</div><div class="tl-title">Rotron Aerospace (UK) — $6.7M cash + 3.33M shares</div><div class="tl-body">High-performance UAV propulsion systems. UK manufacturing base. Extends OAS vertical integration into propulsion. Establishes UK / NATO European presence.</div></div>
+        <div class="tli"><div class="tl-date">March 17, 2026</div><div class="tl-title">INDO Earth Moving Ltd.</div><div class="tl-body">Heavy tracked engineering vehicles. $140M tender anchor; $68M initial order. Q2 2026 revenue. 4+ year sustainment. Future autonomous engineering vehicle platform.</div></div>
+        <div class="tli"><div class="tl-date">April 1, 2026</div><div class="tl-title">World View Enterprises</div><div class="tl-body">Stratollite persistent ISR at 60–100k ft. Palantir AI ISR partnership. $16M backlog at close. Completes vertical ISR coverage from ground to stratosphere.</div></div>
+        <div class="tli"><div class="tl-date">April 15, 2026</div><div class="tl-title">ONBERG JV (with Heidelberg)</div><div class="tl-body">European drone defense manufacturing hub in Brandenburg, Germany. Initial focus Germany and Ukraine. NATO sovereign manufacturing capability.</div></div>
+        <div class="tli" style="padding-bottom:0;"><div class="tl-date">April 24, 2026</div><div class="tl-title">Mistral (U.S. Defense Prime) — $175M</div><div class="tl-body">Most strategically important acquisition. Army + SOCOM IDIQ contract vehicles. $264M backlog. Programs in excess of $1B. U.S. domestic manufacturing. Transforms Ondas from a technology vendor into a DoD prime contractor.</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="card-lbl" style="margin-bottom:16px;">Identified Future Expansion Markets</div>
+      <div class="card" style="margin-bottom:11px;border-left:3px solid var(--gold);">
+        <div class="card-h" style="font-size:14px;">LEO Satellite / SATCOM Integration</div>
+        <p style="font-size:12.5px;">Completing the ISR stack from ground → balloon → satellite. A LEO SATCOM terminal manufacturer or small satellite integrator (Starlink-compatible, AST SpaceMobile-adjacent) would enable truly global, infrastructure-independent C2 for all OAS assets. Critical for remote border and oceanic ISR missions.</p>
+      </div>
+      <div class="card" style="margin-bottom:11px;border-left:3px solid var(--gold);">
+        <div class="card-h" style="font-size:14px;">Proprietary AI / Edge Autonomy Software</div>
+        <p style="font-size:12.5px;">Palantir partnership addresses cloud analytics, but onboard edge-AI for fully autonomous operations is a gap. An AI mission-management platform (akin to Shield AI's Hivemind) would become the software moat locking all OAS hardware platforms into a proprietary ecosystem.</p>
+      </div>
+      <div class="card" style="margin-bottom:11px;border-left:3px solid var(--gold);">
+        <div class="card-h" style="font-size:14px;">Ukraine Battlefield Technology (Ondas Capital Bridge)</div>
+        <p style="font-size:12.5px;">$150M+ mandate targets combat-proven Ukrainian dual-use tech. Likely: loitering munition manufacturers, fiber-optic cable-guided drones, EW systems, AI-driven reconnaissance networks. All have proven Western export demand and NATO approval pathways via Ondas Capital + ONBERG.</p>
+      </div>
+      <div class="card" style="margin-bottom:11px;border-left:3px solid var(--gold);">
+        <div class="card-h" style="font-size:14px;">Maritime / Undersea UAS Domain</div>
+        <p style="font-size:12.5px;">Zero maritime capability in current OAS portfolio. AUV (Autonomous Underwater Vehicle) or maritime drone acquisition addresses a rapidly growing DoD priority — port security, littoral ISR, undersea cable protection. Would complete OAS's "all-domain" positioning.</p>
+      </div>
+      <div class="card" style="margin-bottom:11px;border-left:3px solid var(--gold);">
+        <div class="card-h" style="font-size:14px;">Rail Systems Integrator (Ondas Networks Accelerant)</div>
+        <p style="font-size:12.5px;">Acquiring a rail telecommunications integrator with existing Class I relationships (Union Pacific, BNSF, CSX) would collapse the PoC-to-full-buildout timeline for FullMAX from 3–4 years to 12–18 months, unlocking the largest single addressable market in the Ondas Networks pipeline.</p>
+      </div>
+      <div class="card" style="margin-bottom:11px;border-left:3px solid var(--gold);">
+        <div class="card-h" style="font-size:14px;">Cybersecurity / Electronic Warfare Hardening</div>
+        <p style="font-size:12.5px;">As Ondas' platforms proliferate into contested environments, adversarial EW attacks on OAS systems become a mission-critical risk. Acquiring an EW hardening or drone cybersecurity firm protects existing assets and opens a DoD platform resilience revenue line — a program area growing at 20%+ annually.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--gold);">
+        <div class="card-h" style="font-size:14px;">Nordic / Eastern European NATO Expansion</div>
+        <p style="font-size:12.5px;">Sweden (Saab ecosystem), Finland, Poland, and the Baltic states represent the fastest-growing defense tech markets in Europe post-Ukraine. A Scandinavian or Polish defense tech acquisition would extend ONBERG's European footprint into the highest-urgency NATO defense spending corridor.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- PANEL: GUIDANCE & OUTLOOK -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="p-guidance" class="panel">
+  <div class="sec-title">Guidance &amp; Outlook</div>
+  <div class="sec-sub">Financial targets · Profitability roadmap · Analyst consensus · Price predictions · Revenue breakdown</div>
+
+  <div class="stats">
+    <div class="stat"><div class="slbl">Q4 2025 Revenue</div><div class="sval">$30.1M</div><div class="schg up">▲ 629% YoY · 198% QoQ</div></div>
+    <div class="stat"><div class="slbl">Q4 2025 Gross Margin</div><div class="sval">42%</div><div class="schg up">Up from 21% YoY</div></div>
+    <div class="stat"><div class="slbl">Q1 2026 Revenue Target</div><div class="sval">$38–40M</div><div class="schg up">▲ 820% YoY</div></div>
+    <div class="stat"><div class="slbl">Full-Year 2026 Guidance</div><div class="sval">$375M+</div><div class="schg neu">Raised from $110M → $180M → $375M+</div></div>
+  </div>
+
+  <!-- REV CHART -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-lbl">Revenue Trajectory — Actual &amp; Guided (2023–2027E)</div>
+    <div class="rev-chart" style="height:180px;">
+      <div class="rc-wrap"><div class="rc-bar act" style="height:2%;"><div class="rc-val">$5.4M</div></div><div class="rc-yr">2023 A</div></div>
+      <div class="rc-wrap"><div class="rc-bar act" style="height:4%;"><div class="rc-val">$7.2M</div></div><div class="rc-yr">2024 A</div></div>
+      <div class="rc-wrap"><div class="rc-bar act" style="height:14%;"><div class="rc-val">$50.7M</div></div><div class="rc-yr">2025 A</div></div>
+      <div class="rc-wrap"><div class="rc-bar proj" style="height:100%;"><div class="rc-val">$375M+</div></div><div class="rc-yr" style="color:var(--gold);">2026 G</div></div>
+      <div class="rc-wrap"><div class="rc-bar proj" style="height:50%;opacity:.55;"><div class="rc-val">~$600M+E</div></div><div class="rc-yr" style="color:var(--gold);">2027 E</div></div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);">A = Actual &nbsp;|&nbsp; G = Guidance &nbsp;|&nbsp; E = Analyst Estimate &nbsp;|&nbsp; Orange = Actual &nbsp;|&nbsp; Gold = Projected/Estimated</p>
+  </div>
+
+  <div class="g2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-lbl">2026 Revenue Bridge ($375M+ Guidance)</div>
+      <div class="row-item"><div><div class="ri-main">5 Q1 2026 Acquisitions</div><div class="ri-sub">World View, Mistral, Rotron, BIRD, INDO</div></div><div class="ri-val">~$230M</div></div>
+      <div class="row-item"><div><div class="ri-main">OAS Organic + Prior Acquisitions</div><div class="ri-sub">Airobotics, AR, 4M Defense, Roboteam, Sentrycs</div></div><div class="ri-val">~$140M</div></div>
+      <div class="row-item"><div><div class="ri-main">Ondas Networks (FullMAX)</div><div class="ri-sub">Rail PoC + utilities · modest near-term</div></div><div class="ri-val">~$5–10M</div></div>
+      <hr class="div" style="margin:10px 0;">
+      <div class="row-item" style="border-color:var(--orange);"><div><div class="ri-main" style="color:var(--white);font-weight:700;">Total 2026 Guidance</div></div><div class="ri-val" style="color:var(--orange);font-size:18px;">$375M+</div></div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px;">CEO Brock described the M&A approach as "repeatable" — a "growth double dip" from both market growth and Ondas' go-to-market acceleration. Centric and Forem cited as already outperforming underwriting assumptions.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Profitability Roadmap</div>
+      <div class="row-item"><div><div class="ri-main">Product-Level Profitability</div><div class="ri-sub">First products reach positive gross → EBITDA</div></div><div class="ri-val">Q3 2026</div></div>
+      <div class="row-item"><div><div class="ri-main">OAS Segment EBITDA Break-Even</div><div class="ri-sub">Improving margins through FY2026 scale</div></div><div class="ri-val">Q3 2027</div></div>
+      <div class="row-item"><div><div class="ri-main">Company-Wide EBITDA Positive</div><div class="ri-sub">Full enterprise including Networks &amp; Capital</div></div><div class="ri-val">Q1 2028</div></div>
+      <div class="row-item"><div><div class="ri-main">EPS Positive (Analyst Consensus)</div><div class="ri-sub">GAAP EPS turns positive (avg. analyst est.)</div></div><div class="ri-val">2028</div></div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px;">EBITDA losses expected to widen in Q1 2026 (~$38.7M used in 2025 operating activities) before improving through H2 2026 as acquired revenue scales and integration costs plateau. 2025 net loss: $133.4M (includes $82.2M non-cash warrant mark-to-market charge).</p>
+    </div>
+  </div>
+
+  <!-- PRICE PREDICTION SCENARIOS -->
+  <div class="card-lbl" style="margin-bottom:14px;">Price Prediction Scenarios (12-Month)</div>
+  <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;">Current price: <b style="color:var(--gold);">$9.06</b> &nbsp;·&nbsp; Wall Street consensus (6–10 analysts): avg. $19.83–$20.53 target &nbsp;·&nbsp; Range: $16.00–$26.25 &nbsp;·&nbsp; Rating: <b style="color:var(--green);">Strong Buy (8/8 Buy, 0 Hold, 0 Sell)</b></p>
+  <div class="g3" style="margin-bottom:20px;">
+    <div class="scenario bear">
+      <div class="sc-lbl">Bear Case</div>
+      <div class="sc-price">$5–7</div>
+      <div class="sc-upside" style="color:var(--red-risk);">-23% to -45% from current</div>
+      <div class="sc-cond"><b style="color:var(--white);">Conditions:</b> Major contract cancellation or delay (INDO, 4M, or border program). 2026 revenue misses guidance by 40%+. Integration failures trigger goodwill impairment charges. Continued share dilution at current pace without organic cash generation. Market de-rates high-growth defense tech sector broadly. Rail network buildout delays persist another year.</div>
+      <div class="sc-cond" style="margin-top:8px;"><b style="color:var(--red-risk);">Probability: ~20%</b> — requires simultaneous execution failures across multiple subsidiaries plus macro defense budget cuts.</div>
+    </div>
+    <div class="scenario base">
+      <div class="sc-lbl">Base Case</div>
+      <div class="sc-price">$14–18</div>
+      <div class="sc-upside" style="color:var(--blue-acc);">+55% to +99% from current</div>
+      <div class="sc-cond"><b style="color:var(--white);">Conditions:</b> 2026 revenue reaches $300–375M range (meets or slightly misses guidance). Integration progresses on schedule; Mistral IDIQ converts initial task orders in H2 2026. OAS product-level profitability achieved Q3 2026. Backlog continues expanding to $600M+. Russell 2000 inclusion adds passive fund buying. Rail PoC converts to 1–2 full Class I buildout agreements. Analyst price targets gradually achieved. FIFA World Cup C-UAS deployment is operationally flawless, driving follow-on public safety contracts.</div>
+      <div class="sc-cond" style="margin-top:8px;"><b style="color:var(--blue-acc);">Probability: ~55%</b> — core thesis intact with normal execution variance.</div>
+    </div>
+    <div class="scenario bull">
+      <div class="sc-lbl">Bull Case</div>
+      <div class="sc-price">$22–30+</div>
+      <div class="sc-upside" style="color:var(--green);">+143% to +230%+ from current</div>
+      <div class="sc-cond"><b style="color:var(--white);">Conditions:</b> 2026 revenue exceeds $375M guidance materially (reaches $450M+). Mistral IDIQ vehicle generates first major task order ($100M+) in H2 2026 beyond current backlog. Palantir AI ISR platform becomes program of record. 4M Defense wins a third major demining tender (Ukraine/NATO). Russell 2000 inclusion occurs. Rail buildout firm commitments signed for 2027 deployment. World View wins standalone DoD stratospheric ISR contract. Potential acquisition by a defense prime (Northrop, L3Harris) at significant premium. HC Wainwright $25 price target validated.</div>
+      <div class="sc-cond" style="margin-top:8px;"><b style="color:var(--green);">Probability: ~25%</b> — requires strong execution plus catalysts from Mistral IDIQ conversion and/or M&amp;A.</div>
+    </div>
+  </div>
+
+  <!-- ANALYST TABLE -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-lbl">Analyst Coverage &amp; Price Targets (May 2026)</div>
+    <div class="analyst-row"><div><div class="an-firm">HC Wainwright &amp; Co.</div><div class="an-analyst">Amit Dayal</div></div><div class="an-rating">STRONG BUY</div><div class="an-target">$25.00</div></div>
+    <div class="analyst-row"><div><div class="an-firm">Oppenheimer</div><div class="an-analyst">Timothy Horan</div></div><div class="an-rating">BUY</div><div class="an-target">$16.00</div></div>
+    <div class="analyst-row"><div><div class="an-firm">Consensus Average (6–10 analysts)</div><div class="an-analyst">Wall Street Consensus</div></div><div class="an-rating">STRONG BUY</div><div class="an-target">$19.83–$20.53</div></div>
+    <div class="analyst-row"><div><div class="an-firm">Alpha Spread (High)</div><div class="an-analyst">Analyst Range</div></div><div class="an-rating">BUY</div><div class="an-target">$26.25</div></div>
+    <div class="analyst-row"><div><div class="an-firm">Simply Wall St. Fair Value (DCF)</div><div class="an-analyst">250% growth / 4% margin / 10% discount</div></div><div class="an-rating">UNDERVALUED</div><div class="an-target">$17.83</div></div>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="card-lbl">Key Metrics</div>
+      <div class="row-item"><div class="ri-main">Forward P/S (2026E)</div><div class="ri-val">~9.2x</div></div>
+      <div class="row-item"><div class="ri-main">Market Cap</div><div class="ri-val">~$4.4B</div></div>
+      <div class="row-item"><div class="ri-main">Shares Outstanding</div><div class="ri-val">~487M</div></div>
+      <div class="row-item"><div class="ri-main">Institutional Ownership</div><div class="ri-val">~33%</div></div>
+      <div class="row-item"><div class="ri-main">52-Week Range</div><div class="ri-val">$0.69–$15.28</div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Analyst Revenue Estimates</div>
+      <div class="row-item"><div class="ri-main">Q1 2026 (Next Report May 14)</div><div class="ri-val">$39.4M est.</div></div>
+      <div class="row-item"><div class="ri-main">Full Year 2026</div><div class="ri-val">$375M+ mgmt.</div></div>
+      <div class="row-item"><div class="ri-main">Full Year 2027 (Analyst Est.)</div><div class="ri-val">~$600M+</div></div>
+      <div class="row-item"><div class="ri-main">8-Year Revenue CAGR (Analyst)</div><div class="ri-val">~68%</div></div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">EPS Forecasts</div>
+      <div class="row-item"><div class="ri-main">2026 EPS (avg. analyst)</div><div class="ri-val">-$0.12</div></div>
+      <div class="row-item"><div class="ri-main">2027 EPS (avg. analyst)</div><div class="ri-val">-$0.07</div></div>
+      <div class="row-item"><div class="ri-main">2028 EPS (avg. analyst)</div><div class="ri-val">+$0.11</div></div>
+      <div class="row-item"><div class="ri-main">Q1 2026 Actual EPS</div><div class="ri-val">-$0.34 (vs -$0.05 est.)</div></div>
+    </div>
+  </div>
+
+  <hr class="div">
+  <div class="card">
+    <div class="card-lbl">Upcoming Catalysts</div>
+    <div class="g3">
+      <div><div class="card-h" style="font-size:14px;">Q1 2026 Earnings — May 14, 2026</div><p style="font-size:12.5px;">Most important near-term event. Revenue vs. $38–40M guidance. Backlog update, updated full-year guidance, Mistral integration progress, and any new contract announcements. Consensus Q1 revenue: $39.4M.</p></div>
+      <div><div class="card-h" style="font-size:14px;">Russell 2000 Index Inclusion</div><p style="font-size:12.5px;">Management highlighted potential for Russell 2000 inclusion as market cap and share count grow. Inclusion would drive significant passive fund buying pressure. Annual reconstitution typically in June.</p></div>
+      <div><div class="card-h" style="font-size:14px;">Mistral First IDIQ Task Order</div><p style="font-size:12.5px;">The first U.S. Army or SOCOM task order awarded through Mistral's IDIQ vehicles — potentially $50–200M+ — would be a transformative catalyst validating the entire acquisition thesis and significantly de-risking 2027 guidance.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- PANEL: RISK FACTORS -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="p-risks" class="panel">
+  <div class="sec-title">Risk Factors</div>
+  <div class="sec-sub">Each risk paired with turnaround analysis and probability of resolution</div>
+  <div class="g2" style="gap:24px;">
+    <div>
+      <div class="card-lbl" style="margin-bottom:14px;">Execution &amp; Financial Risks</div>
+
+      <div class="risk high">
+        <div class="risk-lbl">HIGH RISK · Integration</div>
+        <div class="risk-title">Acquisition Overload — 10+ Companies in 18 Months</div>
+        <div class="risk-desc">Five acquisitions in Q1 2026 alone, deploying ~$550M. Cultural integration, systems harmonization, and product roadmap alignment across 10+ entities simultaneously creates significant execution risk. Any failure directly pressures the $375M 2026 guidance.</div>
+        <div class="turnaround">
+          <div class="turnaround-lbl">Turnaround Path</div>
+          <div class="risk-desc">Patrick Huston (COO, retired BrigGen) brings military organizational integration expertise. Roboteam HUB C2 provides a unifying technical architecture. Management cites Centric and Forem as already outperforming underwriting — proving the integration playbook works. Key indicator: Q2 2026 revenue hitting $90–100M range validates integration pace.</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;"><span style="font-size:10px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;">RESOLUTION PROBABILITY</span><div class="prob-bar" style="flex:1;"><div class="prob-fill" style="width:72%;"></div></div><span style="font-size:12px;color:var(--green);font-weight:700;">72%</span></div>
+        </div>
+      </div>
+
+      <div class="risk high">
+        <div class="risk-lbl">HIGH RISK · Dilution</div>
+        <div class="risk-title">Massive Share Issuance — $1.8B Raised, 487M Shares</div>
+        <div class="risk-desc">Aggressive equity financing has expanded share count substantially. Warrant-related non-cash charges (~$82.2M in 2025) create GAAP noise. Continued M&A via stock consideration may further dilute EPS even as revenue grows.</div>
+        <div class="turnaround">
+          <div class="turnaround-lbl">Turnaround Path</div>
+          <div class="risk-desc">Dilution risk diminishes sharply as Mistral IDIQ vehicles convert cash-paying task orders. With $1.5B cash on hand, Ondas no longer needs to issue stock for working capital — future dilution should be limited to strategic acquisitions. Product-level profitability in Q3 2026 reduces equity dependence. Russell 2000 inclusion offsets dilution pressure through passive buying.</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;"><span style="font-size:10px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;">RESOLUTION PROBABILITY</span><div class="prob-bar" style="flex:1;"><div class="prob-fill" style="width:65%;"></div></div><span style="font-size:12px;color:var(--green);font-weight:700;">65%</span></div>
+        </div>
+      </div>
+
+      <div class="risk high">
+        <div class="risk-lbl">HIGH RISK · Concentration</div>
+        <div class="risk-title">Revenue Concentration in Few Large Contracts</div>
+        <div class="risk-desc">INDO ($140M), 4M demining ($80M total tenders), and the autonomous border protection program collectively represent a large share of 2026 guidance. Cancellation or delay of any single program materially impacts reported revenues.</div>
+        <div class="turnaround">
+          <div class="turnaround-lbl">Turnaround Path</div>
+          <div class="risk-desc">Concentration risk diminishes rapidly as Mistral's IDIQ vehicles add dozens of independent task orders, World View adds stratospheric ISR revenue, and Sentrycs adds recurring FIFA + follow-on C-UAS contracts. By end of 2026, revenue should be spread across 15+ distinct programs and geographies, no single one exceeding 15% of total. Geographic diversification (Israel, U.S., Europe, APAC, India) provides natural hedge.</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;"><span style="font-size:10px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;">RESOLUTION PROBABILITY</span><div class="prob-bar" style="flex:1;"><div class="prob-fill" style="width:70%;"></div></div><span style="font-size:12px;color:var(--green);font-weight:700;">70%</span></div>
+        </div>
+      </div>
+
+      <div class="risk med">
+        <div class="risk-lbl">MEDIUM RISK · Profitability Timeline</div>
+        <div class="risk-title">EBITDA Positive Not Until Q1 2028 — Losses Widen Near-Term</div>
+        <div class="risk-desc">Company-wide EBITDA profitability not until Q1 2028. Q1 2026 losses expected to widen due to accelerated hiring, marketing, and infrastructure investment. $38.7M operating cash used in 2025; cash burn expected to increase H1 2026.</div>
+        <div class="turnaround">
+          <div class="turnaround-lbl">Turnaround Path</div>
+          <div class="risk-desc">Q4 2025 gross margin of 42% already demonstrates the unit economics work at scale. $1.5B cash provides 3+ year runway to profitability even if cash burn doubles. As Mistral IDIQ programs ramp (typically high-margin government contracts), consolidated margins should expand meaningfully in 2027. Analyst consensus forecasts EPS positive by 2028 — a credible, funded path.</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;"><span style="font-size:10px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;">RESOLUTION PROBABILITY</span><div class="prob-bar" style="flex:1;"><div class="prob-fill" style="width:78%;"></div></div><span style="font-size:12px;color:var(--green);font-weight:700;">78%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card-lbl" style="margin-bottom:14px;">Legal, Regulatory &amp; Strategic Risks</div>
+
+      <div class="risk med">
+        <div class="risk-lbl">MEDIUM RISK · Export Control / ITAR</div>
+        <div class="risk-title">Multi-National Subsidiaries Face ITAR/EAR Compliance Complexity</div>
+        <div class="risk-desc">Israeli (Airobotics, Roboteam, Sentrycs, 4M), UK (Rotron), and German (ONBERG) operations must navigate ITAR, Israeli SIBAT defense export licensing, EAR, and EU dual-use goods regulations simultaneously. A compliance failure could halt exports or trigger sanctions.</div>
+        <div class="turnaround">
+          <div class="turnaround-lbl">Turnaround Path</div>
+          <div class="risk-desc">Mistral's existing U.S. defense prime compliance infrastructure (DCSA, CMMC, ITAR) extends across the enterprise — a key synergy beyond backlog. Patrick Huston as COO/General Counsel provides legal oversight expertise. ONBERG's European manufacturing hub reduces ITAR dependency for European customers by enabling local production. Risk is manageable with proper compliance investment, which Ondas is making.</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;"><span style="font-size:10px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;">RESOLUTION PROBABILITY</span><div class="prob-bar" style="flex:1;"><div class="prob-fill" style="width:80%;"></div></div><span style="font-size:12px;color:var(--green);font-weight:700;">80%</span></div>
+        </div>
+      </div>
+
+      <div class="risk med">
+        <div class="risk-lbl">MEDIUM RISK · GAAP Volatility</div>
+        <div class="risk-title">Warrant Mark-to-Market Creates GAAP Noise (~$82M Non-Cash in 2025)</div>
+        <div class="risk-desc">Certain warrants classified as liabilities must be marked to market each quarter, creating large non-cash charges that distort GAAP EPS significantly. Can trigger algorithmic selling on earnings misses even when operations are on track.</div>
+        <div class="turnaround">
+          <div class="turnaround-lbl">Turnaround Path</div>
+          <div class="risk-desc">Management explicitly highlighted this as "no impact on cash, operations, or underlying economics." As the warrants are exercised or expire, the mark-to-market liability decreases. Pre-funded warrants from January 2026 financing were already fully exercised per the Q4 earnings call — reducing outstanding warrant liability. Analyst community and institutional investors increasingly use Adjusted EBITDA metrics, minimizing the market impact.</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;"><span style="font-size:10px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;">RESOLUTION PROBABILITY</span><div class="prob-bar" style="flex:1;"><div class="prob-fill" style="width:85%;"></div></div><span style="font-size:12px;color:var(--green);font-weight:700;">85%</span></div>
+        </div>
+      </div>
+
+      <div class="risk med">
+        <div class="risk-lbl">MEDIUM RISK · Networks Revenue</div>
+        <div class="risk-title">Ondas Networks Rail Buildout Timelines Remain Uncertain</div>
+        <div class="risk-desc">Despite AAR adopting dot16 as the formal NGHE standard, firm railroad network buildout commitments are not yet in hand. FullMAX revenue expected to remain modest ($5–10M) through 2026. NGHE product rollouts not until 2027 mean a multi-year wait.</div>
+        <div class="turnaround">
+          <div class="turnaround-lbl">Turnaround Path</div>
+          <div class="risk-desc">The AAR's adoption of dot16 as a formal standard (expected end 2026) is a regulatory green light that transforms PoC conversations into procurement conversations. Three Class I PoCs running simultaneously — at least one expected to convert to a full buildout agreement in 2026. India deliveries provide near-term revenue while domestic railroad market matures. CISA security bulletins highlighting legacy HoT/EoT vulnerabilities accelerating industry urgency.</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;"><span style="font-size:10px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;">RESOLUTION PROBABILITY</span><div class="prob-bar" style="flex:1;"><div class="prob-fill" style="width:68%;"></div></div><span style="font-size:12px;color:var(--green);font-weight:700;">68%</span></div>
+        </div>
+      </div>
+
+      <div class="risk ok">
+        <div class="risk-lbl">GREEN LIGHT · AAR Standard</div>
+        <div class="risk-title">dot16 (802.16t) Selected Across All Three AAR Frequency Bands</div>
+        <div class="risk-desc">AAR's adoption of Ondas Networks' IEEE 802.16t across 900 MHz, 450 MHz, and 160 MHz — with formal AAR standard adoption expected end 2026 — de-risks the FullMAX revenue thesis. No competing technology is under evaluation.</div>
+      </div>
+
+      <div class="risk ok">
+        <div class="risk-lbl">GREEN LIGHT · FAA &amp; Blue UAS</div>
+        <div class="risk-title">Industry-First BVLOS Waiver + Blue UAS DoD Certification</div>
+        <div class="risk-desc">American Robotics holds the only U.S. blanket BVLOS waiver for fully automated, unattended drone operations. Optimus platform also achieved Blue UAS List certification, unlocking DoD and DHS procurement across all federal agencies.</div>
+      </div>
+
+      <div class="risk ok">
+        <div class="risk-lbl">GREEN LIGHT · Mistral IDIQ Access</div>
+        <div class="risk-title">Direct U.S. Army + SOCOM IDIQ Contract Vehicle Access via Mistral</div>
+        <div class="risk-desc">Mistral's merger provides a procurement-process moat eliminating the 2–5 year contractor qualification cycle for OAS technologies. Programs in excess of $1B captured. $264M backlog transferred at close. The most durable structural competitive advantage Ondas possesses.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- PANEL: GEOPOLITICAL -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="p-geopolitical" class="panel">
+  <div class="sec-title">Geopolitical Analysis</div>
+  <div class="sec-sub">Risks and tailwinds across Ondas' global operating footprint</div>
+  <div class="geo-grid">
+    <div class="geo-card ben">
+      <div class="geo-lbl">▲ Strategic Tailwinds</div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>NATO Defense Spending Surge:</b> Alliance members committed to 2%+ GDP defense spending; Germany, Poland, and the Baltics moving to 3–4%. Autonomous systems are the primary growth category. Every NATO dollar spent on drones, C-UAS, and ground robots is a potential Ondas program.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>Ukraine War — Validation &amp; Demand Signal:</b> The Ukraine conflict validated autonomous drones and UGVs as decisive battlefield systems — precisely Ondas' product suite. Western militaries now urgently procuring field-tested equivalents, not laboratory concepts.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>Israel Defense Priorities:</b> $1.7B Eastern Border Security Barrier Initiative directly fuels 4M Defense. IDF autonomous systems modernization benefits Roboteam and Airobotics. Sentrycs' Israeli homeland security contracts are multi-year, stable programs.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>U.S. Border Security:</b> Bipartisan consensus on technology-enhanced border protection creates a multi-administration runway for Airobotics' border programs — reducing political risk versus traditional defense contracts dependent on single-party support.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>FIFA &amp; Mass Event Security:</b> FIFA World Cup Sentrycs deployment is a global C-UAS showcase. Precedent extends to LA Olympics 2028, major sporting leagues, airports worldwide — creating a recurring event-security market category.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>Indo-Pacific Deterrence:</b> U.S. DoD's Indo-Pacific priority (Taiwan, South China Sea) drives demand for autonomous ISR and ground systems via Mistral's SOCOM IDIQ vehicles. The APAC Airobotics defense contract is an early entry point.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>European Sovereign Defense:</b> Post-Ukraine, European nations are building domestic autonomous defense capacity. ONBERG JV with Heidelberg addresses this directly, providing NATO-sovereign manufacturing that European procurement regulations increasingly require.</p></div>
+    </div>
+    <div class="geo-card rsk">
+      <div class="geo-lbl">▼ Geopolitical Risks</div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>Israel-Region Escalation:</b> Ongoing conflict creates both opportunity and operational risk for Ondas' four Israeli subsidiaries (Airobotics, Roboteam, Sentrycs, 4M). Personnel safety, supply chain disruption, and export restriction risk are real and ongoing.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>U.S.-China Technology Decoupling:</b> Export control tightening (BIS/ITAR) could restrict semiconductor and sensor components of Chinese origin in OAS platforms. CMMC compliance and supply chain audits are increasing cost and complexity.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>Ukraine Peace Agreement Risk:</b> A ceasefire could reduce the urgency of European defense tech acquisition and slow the Ondas Capital "Technology Bridge" thesis. However, post-conflict demining (4M Defense) would actually accelerate, partially offsetting this risk.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>Middle East Political Instability:</b> 4M Defense's Syria border programs are vulnerable to rapidly shifting geopolitical alignment in Syria. Changes in Israeli-Syrian-Turkish dynamics could affect program continuity and follow-on phases.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>U.S. DoD Budget Continuing Resolutions:</b> Congressional budget uncertainty and potential sequestration could delay IDIQ task order awards through Mistral, directly impacting 2027 revenue visibility when the Mistral contribution is expected to become material.</p></div>
+      <div class="geo-row"><div class="geo-dot"></div><p><b>EU Defense Sovereignty Regulation:</b> EU procurement rules increasingly require domestic content. ONBERG partially addresses this, but non-EU-manufactured components in Israeli-designed platforms may face procurement barriers in some European markets.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-lbl">Global Deployment &amp; Operational Footprint</div>
+    <table class="dtable">
+      <thead><tr><th>Region</th><th>Active Subsidiaries</th><th>Current Programs</th><th>Risk Level</th><th>Revenue Timeline</th></tr></thead>
+      <tbody>
+        <tr><td><b>United States</b></td><td>American Robotics, Mistral, BIRD, Rotron (via UK), World View</td><td>Border ISR ($20M initial), SOCOM/Army IDIQ ($264M backlog), Stratospheric ISR, Rail PoC, BVLOS industrial</td><td class="grn">Low</td><td class="grn">Now → 2026+</td></tr>
+        <tr><td><b>Israel</b></td><td>Airobotics, Roboteam, Sentrycs, 4M Defense</td><td>Border protection, demining ($80M tenders), DFR, semiconductor ISR, C-UAS infrastructure</td><td style="color:var(--yellow);">Medium</td><td class="grn">Now → Multi-year</td></tr>
+        <tr><td><b>Germany / Europe</b></td><td>ONBERG JV (Heidelberg), Sentrycs (State Police)</td><td>Drone defense manufacturing, C-UAS law enforcement, NATO procurement</td><td class="grn">Low</td><td style="color:var(--yellow);">2026–2027</td></tr>
+        <tr><td><b>UAE</b></td><td>Airobotics</td><td>Smart city ISR, port security, urban drone operations</td><td class="grn">Low</td><td class="grn">Ongoing</td></tr>
+        <tr><td><b>Asia-Pacific</b></td><td>Airobotics (APAC classified gov.)</td><td>National security autonomous aerial program, initial deliveries 2026</td><td style="color:var(--yellow);">Low-Med</td><td class="grn">2026 deliveries</td></tr>
+        <tr><td><b>India</b></td><td>Ondas Networks</td><td>FullMAX commercial rail, first deliveries early 2026</td><td class="grn">Low</td><td class="grn">2026 initial</td></tr>
+        <tr><td><b>UK</b></td><td>Rotron Aerospace</td><td>UAV propulsion manufacturing, NATO supply chain</td><td class="grn">Low</td><td style="color:var(--yellow);">2026–2027</td></tr>
+        <tr><td><b>Ukraine / E. Europe</b></td><td>Ondas Capital (investments), ONBERG (pipeline)</td><td>Technology bridge investments, ONBERG supply pipeline</td><td class="ored">High</td><td style="color:var(--yellow);">2026 development</td></tr>
+        <tr><td><b>Middle East (Ex-Israel)</b></td><td>Sentrycs, Airobotics (counter-drone orders)</td><td>New counter-drone orders (Mar 2026), C-UAS for critical infrastructure</td><td style="color:var(--yellow);">Medium</td><td class="grn">2026</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- PANEL: COMPETITIVE LANDSCAPE -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="p-competitive" class="panel">
+  <div class="sec-title">Competitive Landscape</div>
+  <div class="sec-sub">Ondas' domain-by-domain competitive positioning vs. peers</div>
+
+  <div class="card" style="margin-bottom:22px;">
+    <div class="card-lbl">Domain Competitiveness Index (Ondas vs. Full Competitive Set · 10 = Market Leader)</div>
+    <div class="g2">
+      <div>
+        <div class="rbar-row"><span class="rbar-lbl">Rail Private Wireless (802.16t)</span><div class="rbar-track"><div class="rbar-fill" style="width:95%;"></div></div><span class="rbar-score">9.5</span></div>
+        <div class="rbar-row"><span class="rbar-lbl">Drone-in-a-Box (BVLOS)</span><div class="rbar-track"><div class="rbar-fill" style="width:88%;"></div></div><span class="rbar-score">8.8</span></div>
+        <div class="rbar-row"><span class="rbar-lbl">System-of-Systems Integration</span><div class="rbar-track"><div class="rbar-fill" style="width:85%;"></div></div><span class="rbar-score">8.5</span></div>
+        <div class="rbar-row"><span class="rbar-lbl">AI Demining / Land Intel</span><div class="rbar-track"><div class="rbar-fill" style="width:85%;"></div></div><span class="rbar-score">8.5</span></div>
+        <div class="rbar-row"><span class="rbar-lbl">Counter-UAS (Non-Kinetic / Urban)</span><div class="rbar-track"><div class="rbar-fill" style="width:80%;"></div></div><span class="rbar-score">8.0</span></div>
+      </div>
+      <div>
+        <div class="rbar-row"><span class="rbar-lbl">U.S. DoD Prime Contractor Access</span><div class="rbar-track"><div class="rbar-fill" style="width:78%;"></div></div><span class="rbar-score">7.8</span></div>
+        <div class="rbar-row"><span class="rbar-lbl">Tactical Ground UGVs</span><div class="rbar-track"><div class="rbar-fill" style="width:72%;"></div></div><span class="rbar-score">7.2</span></div>
+        <div class="rbar-row"><span class="rbar-lbl">High-Altitude Persistent ISR</span><div class="rbar-track"><div class="rbar-fill" style="width:70%;"></div></div><span class="rbar-score">7.0</span></div>
+        <div class="rbar-row"><span class="rbar-lbl">Balance Sheet / Funding</span><div class="rbar-track"><div class="rbar-fill" style="width:75%;"></div></div><span class="rbar-score">7.5</span></div>
+        <div class="rbar-row"><span class="rbar-lbl">Proprietary AI / Software Stack</span><div class="rbar-track"><div class="rbar-fill" style="width:52%;"></div></div><span class="rbar-score">5.2</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-lbl">Drone / Autonomous Systems Competitors</div>
+      <table class="dtable">
+        <thead><tr><th>Company</th><th>Ticker</th><th>Strengths vs. ONDS</th><th>Weaknesses vs. ONDS</th></tr></thead>
+        <tbody>
+          <tr><td><b>AeroVironment</b></td><td>AVAV</td><td>Larger, mature DoD relationships, Switchblade loitering munition</td><td>No drone-in-a-box, no C-UAS stack, no private wireless, no demining</td></tr>
+          <tr><td><b>Red Cat Holdings</b></td><td>RCAT</td><td>Black Widow small group drone, DoD contract wins</td><td>Pure-play small drones; no ground, C-UAS, or rail; much smaller scale</td></tr>
+          <tr><td><b>Unusual Machines</b></td><td>UMAC</td><td>U.S. component manufacturing, Blue UAS supply chain</td><td>Component/hardware vendor, not integrated platform; no defense prime</td></tr>
+          <tr><td><b>Shield AI</b></td><td>Private</td><td>Hivemind AI pilot software leader, F-16 dogfight demo</td><td>Software-only, no hardware at scale, no prime contractor status</td></tr>
+          <tr><td><b>Joby / Archer</b></td><td>JOBY/ACHR</td><td>eVTOL / air taxi market leadership</td><td>Completely different market; no defense, security, or ISR applications</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Counter-UAS Competitors</div>
+      <table class="dtable">
+        <thead><tr><th>Company</th><th>HQ</th><th>Tech</th><th>vs. Sentrycs (ONDS)</th></tr></thead>
+        <tbody>
+          <tr><td><b>DroneShield</b></td><td>Australia (ASX:DRO)</td><td>RF detection + EW jammers</td><td>Larger revenue, but jamming-dependent — restricted in urban areas where Sentrycs excels</td></tr>
+          <tr><td><b>Dedrone (Axon)</b></td><td>USA</td><td>Software RF/radar</td><td>Detection only, no active interdiction; Sentrycs offers full detect-to-defeat cycle</td></tr>
+          <tr><td><b>D-Fend Solutions</b></td><td>Israel (private)</td><td>EnforceAir RF takeover</td><td>Closest technology analog; Sentrycs has broader deployment record and OAS integration advantage</td></tr>
+          <tr><td><b>Fortem Technologies</b></td><td>USA (private)</td><td>TrueView radar + net guns</td><td>Kinetic-heavy, limited urban deployment; no FIFA-scale validation</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-lbl">Private Wireless / Rail Competitors</div>
+      <table class="dtable">
+        <thead><tr><th>Company</th><th>Technology</th><th>vs. FullMAX (ONDS)</th></tr></thead>
+        <tbody>
+          <tr><td><b>Nokia (Rail)</b></td><td>LTE/5G private rail</td><td>Much larger company; public spectrum dependency; not a formal AAR standard</td></tr>
+          <tr><td><b>Tarana Wireless</b></td><td>g.now NLOS broadband</td><td>Different spectrum; no AAR standard designation; venture-backed, smaller</td></tr>
+          <tr><td><b>Wabtec</b></td><td>PTC / rail systems</td><td>Systems integrator, not a wireless tech owner; potential partner rather than competitor</td></tr>
+          <tr><td><b>Cisco (Industrial IoT)</b></td><td>Industrial Wi-Fi / LTE</td><td>Horizontal, no rail-specific MC-IoT expertise, no licensed spectrum focus</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;margin-top:10px;color:var(--muted);">Ondas Networks' AAR 802.16t standard designation across all three railroad frequency bands creates a near-monopoly position. No competitor has an equivalent standards-body endorsement.</p>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Ondas' Four Structural Moats</div>
+      <div class="geo-row" style="margin-bottom:12px;"><div class="geo-dot" style="background:var(--green);margin-top:5px;"></div><p><b>FAA BVLOS Waiver:</b> American Robotics holds the only U.S. blanket waiver for fully automated, unattended BVLOS drone operations. Multi-year regulatory moat with no near-term competitor equivalent. Blue UAS List certification adds DoD procurement access.</p></div>
+      <div class="geo-row" style="margin-bottom:12px;"><div class="geo-dot" style="background:var(--green);margin-top:5px;"></div><p><b>AAR 802.16t Rail Standard:</b> FullMAX is the mandated technology for North American railroad Next-Gen communications across all three frequency bands — a standards-body-enforced monopoly position spanning all 7 Class I railroads and thousands of regional carriers.</p></div>
+      <div class="geo-row" style="margin-bottom:12px;"><div class="geo-dot" style="background:var(--green);margin-top:5px;"></div><p><b>Mistral IDIQ DoD Prime Access:</b> Direct access to U.S. Army and SOCOM IDIQ task order vehicles eliminates the 2–5 year qualification cycle that blocks most autonomous systems companies from winning large DoD contracts. No equivalent procurement advantage exists among ONDS direct peers.</p></div>
+      <div class="geo-row"><div class="geo-dot" style="background:var(--green);margin-top:5px;"></div><p><b>Full-Spectrum System-of-Systems:</b> No single competitor offers the complete stack from stratospheric ISR (World View) → aerial drones (Airobotics/AR) → C-UAS (Sentrycs/Iron Drone) → tactical UGVs (Roboteam) → demining robots (4M) → heavy engineering (INDO) → private wireless (Ondas Networks) — all under a unified AI C2 (Roboteam HUB + Palantir). This breadth is Ondas' most durable long-term moat.</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showMain(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.mtab').forEach(b => b.classList.remove('active'));
+  document.getElementById('p-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function subTab(btn, paneId) {
+  const wrap = btn.closest('.sub-wrap');
+  wrap.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+  wrap.querySelectorAll('.sub-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(paneId).classList.add('active');
+}
+</script>
+</body>
+</html>
